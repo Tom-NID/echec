@@ -1,0 +1,27 @@
+
+body {                             
+	background-image: url(Image/prism.png);
+
+}
+
+.plateau{
+	width: 800px;
+	height: 800px;
+}
+
+.pions_morts{
+	background-color:darkgrey;
+	width: 600px;
+	height: 300px;
+	position: absolute;
+}
+
+#QI_blanc{
+	color: white;
+	position: absolute;
+}
+
+#QI_noir{
+	color: rgb(37, 150, 190);
+	position: absolute;
+}
