@@ -1,7 +1,20 @@
+// AJOUTER //
+/*
+    IMPORTANT :
+- Changer de pion quand il arrive au bout du plateau
+- Pouvoir gagner
+- Connaitre les pions qu'on peut deplacer quand il y a echec
+- Style global du site
+
+    OPTIONEL:
+- Animation du deplacement des pions
+- Deplacer les pions en "drag and drop"
+- mode de jeu pions aléatoires
+*/
+
 var rect = document.getElementById("plateau").getBoundingClientRect()
 
 var largeur= Math.floor(screen.width / 20)
-// var hauteur_ecran = screen.height
 
 var Grille = [
 ["nt", "nc", "nf", "nd", "nr", "nf", "nc", "nt"],
@@ -15,6 +28,7 @@ var Grille = [
 
 var pion_selection = null
 var pion_adverses = []
+var pion_echec = []
 var tour = 0
 var QI_blanc = 100
 var QI_noir = 100
@@ -487,7 +501,7 @@ function Tour(pion){
 function verif_echec(pion, i1, i2, id){
     if(! case_deplacement(pion, i1, i2) && pion_adverse(pion, i1, i2)){
         if(document.getElementById(String(Number(pion.case[0]) + i1 + String(Number(pion.case[1]) + i2))).pion.id[1] == id){
-            pion_adverses.push(document.getElementById(String(Number(pion.case[0]) + i1 + String(Number(pion.case[1]) + i2))).pion)
+            pion_echec.push(document.getElementById(String(Number(pion.case[0]) + i1 + String(Number(pion.case[1]) + i2))).pion)
             return true
         }
     }
@@ -590,15 +604,16 @@ function echec(pion){
         if(verif_echec(pion, 0, i, 't') || verif_echec(pion, 0, i, 'd')){break;}
         i += 1
     }
-    if(pion_adverses.length > 0){
+    if(pion_echec.length > 0){
         pion.echec = true
+        son_echec()
         console.log("echec", pion, pion_adverses)
     }
     else{
         pion.echec = false
         console.log("pas echec", pion)
     }
-    reinitialiser()
+    pion_echec = []
 }
 
 function deplacement(frame){
@@ -614,13 +629,13 @@ function deplacement(frame){
         QI()
         tour += 1     
     }
-    reinitialiser()
     if(tour % 2 == 0){
         echec(document.getElementById("br"))
     }
     else{
         echec(document.getElementById("nr"))
     }
+    reinitialiser()
 }
 
 function reinitialiser(){
@@ -637,7 +652,8 @@ function reinitialiser(){
                 frame.src = "Image/case_noir.png"
             }   
             if(frame.couleur == 3){
-                frame.src = "Image/case_jaune.png"          
+                console.log("AAAAAAAAAAAA")
+                frame.src = "Image/case_jaune.png"     
                 frame.couleur = (i+j) % 2
             }
         }
@@ -658,6 +674,12 @@ function sonDeplacement(frame){
         SonMove.src = "Sounds/move" + String(Math.floor(Math.random() * 7)) + ".mp3"
     }
     SonMove.play()
+}
+
+function son_echec(){
+    let son = document.createElement("audio")
+    son.src = "Sounds/echec" + String(Math.floor(Math.random() * 19)) + ".mp3"
+    son.play()
 }
 
 function QI(){
@@ -710,7 +732,7 @@ function gagner(){
     text.style.left = String(screen.width / 2 - largeur * 2) + "px"
     text.style.position = "absolute"
     text.style.zIndex = "2"
-    text.innerHTML = "VICTOIRE DU JOUEUR BLANC !!"
+    text.innerHTML = "VICTOIRE DU JOUEUR ... !!"
     document.body.appendChild(text)
 
 
