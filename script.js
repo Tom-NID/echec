@@ -192,6 +192,7 @@ function attaque(pion, i1, i2){
 
 function croquer(pion){
     deplacement(document.getElementById(pion.case))
+    pion.onclick = function(){return}
     pion.style.position = "static"
     pion.style.top = "0px"
     pion.style.left = "0px"
