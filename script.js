@@ -117,10 +117,17 @@ function Initialisation(){
     document.getElementById("pions_blancs_morts").style.width = String( 3 * largeur) + "px"
     document.getElementById("pions_blancs_morts").style.height = String(6 * largeur) + "px"
 
+
     document.getElementById("QI_blanc").style.top = String(rect.top + 7 * largeur) + "px"
     document.getElementById("QI_blanc").style.left = String(screen.width / 2 + largeur * 5) + "px"
+    document.getElementById("QI_blanc").style.width = String(largeur) + "px"
+    document.getElementById("QI_blanc").style.height = String(largeur) + "px"
+
+
     document.getElementById("QI_noir").style.top = String(rect.top) + "px"
     document.getElementById("QI_noir").style.left = String(screen.width / 2 - largeur * 6) + "px"
+    document.getElementById("QI_noir").style.width = String(largeur) + "px"
+    document.getElementById("QI_noir").style.height = String(largeur) + "px"
 
     let Son = document.createElement("img")
     Son.id = "son"
