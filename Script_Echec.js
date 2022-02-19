@@ -600,8 +600,8 @@ function reinitialiser(){
         }
     }
     for(let i = 0; i < pion_adverses.length; i ++){
-        if(pion_adverses[i].id[0] == 'n'){pion_adverses[i].src = "Image/noir/" + String(pion_adverses[i].id) + ".png"}   
-        else{pion_adverses[i].src = "Image/blanc/" + String(pion_adverses[i].id) + ".png"}
+        if(pion_adverses[i].id[0] == 'n'){pion_adverses[i].src = "Image/Noir/" + String(pion_adverses[i].id) + ".png"}   
+        else{pion_adverses[i].src = "Image/Blanc/" + String(pion_adverses[i].id) + ".png"}
     }
     pion_adverses = []
 }
