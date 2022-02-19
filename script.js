@@ -706,19 +706,31 @@ function reinitialiser(){
                 frame.couleur = (i+j) % 2
             }
             if(frame.couleur == 0){
-                if(Math.floor(Math.random() * 1000) > 0){
+                if(Math.floor(Math.random() * 10000) > 0){
                     frame.src = "Image/case_blanc.png"
                 }
                 else{
-                    frame.src = "Image/berthelon_blanc.png"
+                    if(Math.floor(Math.random() * 100) > 0){
+                        frame.src = "Image/berthelon_blanc.png"
+                    }
+                    else{
+                        frame.src = "Image/prof_jaquot.png"
+                        console.log("Prof jaquot !")
+                    }
                 }
             }
             if(frame.couleur == 1){
-                if(Math.floor(Math.random() * 1000) > 0){
+                if(Math.floor(Math.random() * 10000) > 0){
                     frame.src = "Image/case_noir.png"
                 }
                 else{
-                    frame.src = "Image/berthelon_noir.png"
+                    if(Math.floor(Math.random() * 100) > 0){
+                        frame.src = "Image/berthelon_noir.png"
+                    }
+                    else{
+                        frame.src = "Image/prof_jaquot.png"
+                        console.log("Prof jaquot !")
+                    }
                 }
                 
             }   
