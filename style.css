@@ -34,7 +34,6 @@ body {
 }
 
 #pions_changement{
-	background-color: red;
 	position: absolute;
 	z-index: -1;
 }
