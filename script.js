@@ -1,5 +1,8 @@
 var rect = document.getElementById("plateau").getBoundingClientRect()
 
+var largeur= Math.floor(screen.width / 20)
+// var hauteur_ecran = screen.height
+
 var Grille = [
 ["nt", "nc", "nf", "nd", "nr", "nf", "nc", "nt"],
 ["np", "np", "np", "np", "np", "np", "np", "np"],
@@ -22,6 +25,11 @@ fond.volume = 1
 fond.loop = true
 
 function Initialisation(){
+    document.getElementById("plateau").style.left = String(screen.width / 2 - largeur * 4) + "px"
+    document.getElementById("plateau").style.width = String(largeur * 8) + "px"
+    document.getElementById("plateau").style.height = String(largeur * 8) + "px"
+    // rect = document.getElementById("plateau").getBoundingClientRect()
+
     for(let i = 0; i < 8; i++){
         for(let j = 0; j < 8; j++){
             
@@ -39,8 +47,10 @@ function Initialisation(){
             
             frame.onclick = function(){deplacement(this)} 
 
-            frame.style.left = String(rect.left + j * 100) + "px"
-            frame.style.top = String(rect.top + i * 100) + "px"
+            frame.style.left = String(j * largeur) + "px"
+            frame.style.top = String(i * largeur) + "px"
+            frame.style.width = String(largeur) + "px"
+            frame.style.height = String(largeur) + "px"
             frame.style.position = "absolute"
 
             if(Grille[i][j] != null){ 
@@ -83,8 +93,10 @@ function Initialisation(){
                 
                 pion.style.zIndex = "1"
                 pion.style.position = "absolute"
-                pion.style.left = String(rect.left + j * 100) + "px"
-                pion.style.top = String(rect.top + i * 100) + "px"
+                pion.style.left = String(j * largeur) + "px"
+                pion.style.top = String(i * largeur) + "px"
+                pion.style.width = String(largeur) + "px"
+                pion.style.height = String(largeur) + "px"
                 
                 frame.pion = pion
             }
@@ -94,17 +106,22 @@ function Initialisation(){
         }
     }
 
-    document.getElementById("pions_noirs_morts").style.left = String(rect.left + 8 * 100) + "px"
-    document.getElementById("pions_noirs_morts").style.top = String(rect.top + 100) + "px"
-    document.getElementById("pions_blancs_morts").style.left = String(rect.left + 8 * 100) + "px"
-    document.getElementById("pions_blancs_morts").style.top = String(rect.top + 4 * 100) + "px"
+    document.getElementById("pions_noirs_morts").style.left = String(screen.width / 2 - largeur * 7) + "px"
+    document.getElementById("pions_noirs_morts").style.top = String(rect.top + largeur) + "px"
+    document.getElementById("pions_noirs_morts").style.width = String( 3 * largeur) + "px"
+    document.getElementById("pions_noirs_morts").style.height = String(6 * largeur) + "px"
 
-    document.getElementById("QI_blanc").style.top = String(rect.top + 700) + "px"
-    document.getElementById("QI_blanc").style.left = String(rect.left + 810) + "px"
+
+    document.getElementById("pions_blancs_morts").style.left = String(screen.width / 2 + largeur * 4) + "px"
+    document.getElementById("pions_blancs_morts").style.top = String(rect.top + largeur) + "px"
+    document.getElementById("pions_blancs_morts").style.width = String( 3 * largeur) + "px"
+    document.getElementById("pions_blancs_morts").style.height = String(6 * largeur) + "px"
+
+    document.getElementById("QI_blanc").style.top = String(rect.top + 7 * largeur) + "px"
+    document.getElementById("QI_blanc").style.left = String(screen.width / 2 + largeur * 5) + "px"
     document.getElementById("QI_noir").style.top = String(rect.top) + "px"
-    document.getElementById("QI_noir").style.left = String(rect.left + 810) + "px"
+    document.getElementById("QI_noir").style.left = String(screen.width / 2 - largeur * 6) + "px"
 
-    
     let Son = document.createElement("img")
     Son.id = "son"
     Son.src = "Image/soundOff.png"
@@ -561,8 +578,8 @@ function echec(pion){
 function deplacement(frame){
     if(frame.couleur == 2){
         if(pion_selection.id[1] == 'p' && ! pion_selection.move){pion_selection.move = true}
-        pion_selection.style.top = String(rect.top + Number(frame.id[0]) * 100) + "px"
-        pion_selection.style.left = String(rect.left + Number(frame.id[1]) * 100) + "px"
+        pion_selection.style.top = String(Number(frame.id[0]) * largeur) + "px"
+        pion_selection.style.left = String(Number(frame.id[1]) * largeur) + "px"
         sonDeplacement(frame)
         dernierDeplacement(frame)
         document.getElementById(pion_selection.case).pion = null
@@ -641,19 +658,19 @@ function gagner(){
     canvas.style.top = String(rect.top) + "px"
     canvas.style.left = String(rect.left) + "px"
     canvas.style.backgroundColor = "rgba(224,224,224, 0.85)"
-    canvas.style.width = "800px"
-    canvas.style.height = "800px"
+    canvas.style.width = String(largeur * 20) + "px"
+    canvas.style.height = String(largeur * 20) + "px"
     canvas.style.zIndex = "1"
     document.body.appendChild(canvas)
 
     let bouton = document.createElement("img")
     bouton.id = "image"
     bouton.innerHTML = "REJOUER"
-    // bouton.style.width = "200px"
-    // bouton.style.height = "100px"
+    bouton.style.width = String(2 * largeur) + "px"
+    bouton.style.height = String(largeur) + "px"
     // bouton.style.borderRadius = "75%"
-    bouton.style.top = String(rect.top + 500) + "px"
-    bouton.style.left = String(rect.left + 300) + "px"
+    bouton.style.top = String(rect.top + 5 * largeur) + "px"
+    bouton.style.left = String(rect.left + 3 * largeur) + "px"
     bouton.style.position = "absolute"
     bouton.style.zIndex = "2"
     // bouton.style.backgroundImage = "url(Image/therock.png)"
