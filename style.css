@@ -9,7 +9,7 @@ body {
 }
 
 .pions_morts{
-	background-color:darkgrey;
+	background-color:rgba(169, 169, 169, 0.3);
 	position: absolute;
 }
 

@@ -123,7 +123,6 @@ function Initialisation(){
     document.getElementById("QI_blanc").style.width = String(largeur) + "px"
     document.getElementById("QI_blanc").style.height = String(largeur) + "px"
 
-
     document.getElementById("QI_noir").style.top = String(rect.top) + "px"
     document.getElementById("QI_noir").style.left = String(screen.width / 2 - largeur * 6) + "px"
     document.getElementById("QI_noir").style.width = String(largeur) + "px"
@@ -132,6 +131,8 @@ function Initialisation(){
     let Son = document.createElement("img")
     Son.id = "son"
     Son.src = "Image/soundOff.png"
+    Son.style.width = String(largeur) + "px"
+    Son.style.height = String(largeur) + "px"
     Son.active = false
     Son.onclick = function(){
         if(Son.active){
@@ -147,6 +148,23 @@ function Initialisation(){
     }
     document.getElementById("son").appendChild(Son)
     tour = 0 
+
+    // TEST
+    /* */
+    let button = document.createElement("button")
+    button.style.width = String(2 * largeur) + "px"
+    button.style.height = String(largeur) + "px"
+    button.style.top = String(rect.top + 8 * largeur) + "px"
+    button.style.left = String(screen.width / 2 - largeur) + "px"
+    button.style.backgroundImage = "url(Image/therock.png)"
+    button.style.position = "absolute"
+    button.style.fontSize = "30px"
+    button.style.fontFamily = "IMPACT"
+    button.style.color = "red"
+    button.innerHTML = "GAGNER"
+    button.onclick = function(){gagner()}
+    document.body.appendChild(button)
+    /* */
 }
 
 // Rends un case accessible par un pion
@@ -664,33 +682,48 @@ function gagner(){
     canvas.id = "canvas"
     canvas.style.position = "absolute"
     canvas.style.top = String(rect.top) + "px"
-    canvas.style.left = String(rect.left) + "px"
+    canvas.style.left = String(screen.width / 2 - largeur * 4) + "px"
     canvas.style.backgroundColor = "rgba(224,224,224, 0.85)"
-    canvas.style.width = String(largeur * 20) + "px"
-    canvas.style.height = String(largeur * 20) + "px"
+    canvas.style.width = String(largeur * 8) + "px"
+    canvas.style.height = String(largeur * 8) + "px"
     canvas.style.zIndex = "1"
     document.body.appendChild(canvas)
 
     let bouton = document.createElement("img")
     bouton.id = "image"
-    bouton.innerHTML = "REJOUER"
     bouton.style.width = String(2 * largeur) + "px"
     bouton.style.height = String(largeur) + "px"
-    // bouton.style.borderRadius = "75%"
     bouton.style.top = String(rect.top + 5 * largeur) + "px"
-    bouton.style.left = String(rect.left + 3 * largeur) + "px"
+    bouton.style.left = String(screen.width / 2 - largeur) + "px"
     bouton.style.position = "absolute"
     bouton.style.zIndex = "2"
-    // bouton.style.backgroundImage = "url(Image/therock.png)"
     bouton.src = "Image/buzzer.png"
     bouton.onclick = function(){rejouer()}
     document.body.appendChild(bouton)
 
+    let text = document.createElement("h1")
+    text.id = "text"
+    text.style.backgroundImage = "linear-gradient(to bottom right, violet, indigo, blue, green, yellow, orange, red)"
+    text.style.textAlign = "center"
+    text.style.width = String(4 * largeur) + "px"
+    text.style.top = String(rect.top + 3 * largeur) + "px"
+    text.style.left = String(screen.width / 2 - largeur * 2) + "px"
+    text.style.position = "absolute"
+    text.style.zIndex = "2"
+    text.innerHTML = "VICTOIRE DU JOUEUR BLANC !!"
+    document.body.appendChild(text)
+
+
 }
 
 function rejouer(){
+    document.getElementById("QI_blanc").innerHTML = "QI : "
+    document.getElementById("QI_noir").innerHTML = "QI : "
+    QI_blanc = 100
+    QI_noir = 100
     document.getElementById("image").remove()
     document.getElementById("canvas").remove()
+    document.getElementById("text").remove()
     let images = document.getElementsByTagName("img")
     l = images.length
     for (let i = 0; i < l; i++) {
