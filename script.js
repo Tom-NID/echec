@@ -172,7 +172,7 @@ function Initialisation(){
     button.style.left = String(screen.width / 2 - largeur) + "px"
     button.style.backgroundImage = "url(Image/therock.png)"
     button.style.position = "absolute"
-    button.style.fontSize = "30px"
+    button.style.fontSize = String(largeur / 2) + "px"
     button.style.fontFamily = "IMPACT"
     button.style.color = "red"
     button.innerHTML = "GAGNER"
@@ -725,6 +725,8 @@ function gagner(){
 
     let text = document.createElement("h1")
     text.id = "text"
+    text.style.fontSize = String(largeur / 2) + "px"
+
     text.style.backgroundImage = "linear-gradient(to bottom right, violet, indigo, blue, green, yellow, orange, red)"
     text.style.textAlign = "center"
     text.style.width = String(4 * largeur) + "px"
