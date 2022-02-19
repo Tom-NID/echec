@@ -706,10 +706,21 @@ function reinitialiser(){
                 frame.couleur = (i+j) % 2
             }
             if(frame.couleur == 0){
-                frame.src = "Image/case_blanc.png"
+                if(Math.floor(Math.random() * 1000) > 0){
+                    frame.src = "Image/case_blanc.png"
+                }
+                else{
+                    frame.src = "Image/berthelon_blanc.png"
+                }
             }
             if(frame.couleur == 1){
-                frame.src = "Image/case_noir.png"
+                if(Math.floor(Math.random() * 1000) > 0){
+                    frame.src = "Image/case_noir.png"
+                }
+                else{
+                    frame.src = "Image/berthelon_noir.png"
+                }
+                
             }   
             if(frame.couleur == 3){
                 frame.src = "Image/case_jaune.png"     
