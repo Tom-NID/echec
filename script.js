@@ -64,7 +64,7 @@ function Initialisation(){
             frame.style.left = String(j * largeur) + "px"
             frame.style.top = String(i * largeur) + "px"
             frame.style.width = String(largeur) + "px"
-            frame.style.height = String(largeur) + "px"
+            // frame.style.height = String(largeur) + "px"
             frame.style.position = "absolute"
 
             if(Grille[i][j] != null){ 
@@ -110,7 +110,7 @@ function Initialisation(){
                 pion.style.left = String(j * largeur) + "px"
                 pion.style.top = String(i * largeur) + "px"
                 pion.style.width = String(largeur) + "px"
-                pion.style.height = String(largeur) + "px"
+                // pion.style.height = String(largeur) + "px"
                 
                 frame.pion = pion
             }
@@ -125,12 +125,10 @@ function Initialisation(){
     document.getElementById("pions_noirs_morts").style.width = String( 3 * largeur) + "px"
     document.getElementById("pions_noirs_morts").style.height = String(6 * largeur) + "px"
 
-
     document.getElementById("pions_blancs_morts").style.left = String(screen.width / 2 + largeur * 4) + "px"
     document.getElementById("pions_blancs_morts").style.top = String(rect.top + largeur) + "px"
     document.getElementById("pions_blancs_morts").style.width = String( 3 * largeur) + "px"
     document.getElementById("pions_blancs_morts").style.height = String(6 * largeur) + "px"
-
 
     document.getElementById("QI_blanc").style.top = String(rect.top + 7 * largeur) + "px"
     document.getElementById("QI_blanc").style.left = String(screen.width / 2 + largeur * 5) + "px"
@@ -141,6 +139,23 @@ function Initialisation(){
     document.getElementById("QI_noir").style.left = String(screen.width / 2 - largeur * 6) + "px"
     document.getElementById("QI_noir").style.width = String(largeur) + "px"
     document.getElementById("QI_noir").style.height = String(largeur) + "px"
+
+    document.getElementById("canvas").style.width = String(largeur * 8) + "px"
+    document.getElementById("canvas").style.height = String(largeur * 8) + "px"
+
+    document.getElementById("image").style.top = String(5 * largeur) + "px"
+    document.getElementById("image").style.left = String(3 * largeur) + "px"
+    document.getElementById("image").style.width = String(2 * largeur) + "px"
+    document.getElementById("image").style.height = String(largeur) + "px"
+
+    document.getElementById("text").style.width = String(4 * largeur) + "px"
+    document.getElementById("text").style.top = String(3 * largeur) + "px"
+    document.getElementById("text").style.left = String(largeur * 2) + "px"
+
+    document.getElementById("pions_changement").style.top = String(3 * largeur) + "px"
+    document.getElementById("pions_changement").style.left = String(3 * largeur) + "px"
+    document.getElementById("pions_changement").style.width = String(2 * largeur) + "px"
+    document.getElementById("pions_changement").style.height = String(2 * largeur) + "px"
 
     let Son = document.createElement("img")
     Son.id = "son"
@@ -498,6 +513,7 @@ function Tour(pion){
         pion_adverses[i].src = "Image/mort.png"
     }
 }
+
 function verif_echec(pion, i1, i2, id){
     if(! case_deplacement(pion, i1, i2) && pion_adverse(pion, i1, i2)){
         if(document.getElementById(String(Number(pion.case[0]) + i1 + String(Number(pion.case[1]) + i2))).pion.id[1] == id){
@@ -507,7 +523,6 @@ function verif_echec(pion, i1, i2, id){
     }
     return false
 }
-
 
 function echec(pion){
     if(Number(pion.case[0]) - 2 >= 0 && Number(pion.case[1]) - 1 >= 0 && pion_adverse(pion, -2, -1)){
@@ -607,11 +622,11 @@ function echec(pion){
     if(pion_echec.length > 0){
         pion.echec = true
         son_echec()
-        console.log("echec", pion, pion_adverses)
+        // console.log("echec", pion, pion_adverses)
     }
     else{
         pion.echec = false
-        console.log("pas echec", pion)
+        // console.log("pas echec", pion)
     }
     pion_echec = []
 }
@@ -626,6 +641,8 @@ function deplacement(frame){
         document.getElementById(pion_selection.case).pion = null
         frame.pion = pion_selection
         pion_selection.case = frame.id
+        if((pion_selection.case[0] == "0" && pion_selection.id == "bp") || (pion_selection.case[0] == "7" && pion_selection.id == "np")){changement_pion(pion_selection)}
+        
         QI()
         tour += 1     
     }
@@ -636,6 +653,49 @@ function deplacement(frame){
         echec(document.getElementById("nr"))
     }
     reinitialiser()
+}
+
+function changement_pion(pion){
+    let pions = ["d", "t", "c", "f"]
+    document.getElementById("canvas").style.zIndex = "2"
+
+    document.getElementById("pions_changement").style.zIndex = "2"
+    pions_changement = document.getElementsByClassName("pions_changement")
+
+    for (let i = 0; i < pions_changement.length; i++) {
+        pions_changement[i].style.width = String(largeur) + "px"
+        if(pion.id[0] == "b"){
+            pions_changement[i].src = "Image/Blanc/b" + pions[i] + ".png"
+        }
+        else{
+            pions_changement[i].src = "Image/Noir/n" + pions[i] + ".png"
+        }
+        
+        pions_changement[i].onclick = function(){
+            let pions = ["d", "t", "c", "f"]
+            pion.src = this.src
+            console.log("this.id =", this.id)
+            pion.id = pion.id[0] + pions[Number(this.id) - 1]
+            console.log("pions[Number(this.id)] =", pions[Number(this.id)])
+            console.log("pion.id =", pion.id)
+            switch(this.id){
+                case "1":
+                    pion.onclick = function(){Dame(this)}
+                    break;
+                case "2":
+                    pion.onclick = function(){Tour(this)}
+                    break;
+                case "3":
+                    pion.onclick = function(){Cava(this)}
+                    break;
+                case "4":
+                    pion.onclick = function(){Fou(this)}
+                    break;
+            }
+            document.getElementById("canvas").style.zIndex = "-1"
+            document.getElementById("pions_changement").style.zIndex = "-1"
+        }
+    }
 }
 
 function reinitialiser(){
@@ -652,7 +712,6 @@ function reinitialiser(){
                 frame.src = "Image/case_noir.png"
             }   
             if(frame.couleur == 3){
-                console.log("AAAAAAAAAAAA")
                 frame.src = "Image/case_jaune.png"     
                 frame.couleur = (i+j) % 2
             }
@@ -700,42 +759,17 @@ function dernierDeplacement(frame){
 }
 
 function gagner(){
-    let canvas = document.createElement("canvas")
-    canvas.id = "canvas"
-    canvas.style.position = "absolute"
-    canvas.style.top = String(rect.top) + "px"
-    canvas.style.left = String(screen.width / 2 - largeur * 4) + "px"
-    canvas.style.backgroundColor = "rgba(224,224,224, 0.85)"
-    canvas.style.width = String(largeur * 8) + "px"
-    canvas.style.height = String(largeur * 8) + "px"
-    canvas.style.zIndex = "1"
-    document.body.appendChild(canvas)
+    let canvas = document.getElementById("canvas")
+    canvas.style.zIndex = "2"
 
-    let bouton = document.createElement("img")
-    bouton.id = "image"
-    bouton.style.width = String(2 * largeur) + "px"
-    bouton.style.height = String(largeur) + "px"
-    bouton.style.top = String(rect.top + 5 * largeur) + "px"
-    bouton.style.left = String(screen.width / 2 - largeur) + "px"
-    bouton.style.position = "absolute"
-    bouton.style.zIndex = "2"
-    bouton.src = "Image/buzzer.png"
-    bouton.onclick = function(){rejouer()}
-    document.body.appendChild(bouton)
+    let image = document.getElementById("image")
+    image.style.zIndex = "2"
+    image.onclick = function(){rejouer()}
 
-    let text = document.createElement("h1")
-    text.id = "text"
+    let text = document.getElementById("text")
     text.style.fontSize = String(largeur / 2) + "px"
-
-    text.style.backgroundImage = "linear-gradient(to bottom right, violet, indigo, blue, green, yellow, orange, red)"
-    text.style.textAlign = "center"
-    text.style.width = String(4 * largeur) + "px"
-    text.style.top = String(rect.top + 3 * largeur) + "px"
-    text.style.left = String(screen.width / 2 - largeur * 2) + "px"
-    text.style.position = "absolute"
     text.style.zIndex = "2"
     text.innerHTML = "VICTOIRE DU JOUEUR ... !!"
-    document.body.appendChild(text)
 
 
 }
@@ -745,13 +779,13 @@ function rejouer(){
     document.getElementById("QI_noir").innerHTML = "QI : "
     QI_blanc = 100
     QI_noir = 100
-    document.getElementById("image").remove()
-    document.getElementById("canvas").remove()
-    document.getElementById("text").remove()
+    document.getElementById("image").style.zIndex = "-1"
+    document.getElementById("canvas").style.zIndex = "-1"
+    document.getElementById("text").style.zIndex = "-1"
     let images = document.getElementsByTagName("img")
     l = images.length
-    for (let i = 0; i < l; i++) {
-        images[0].remove()
+    for (let i = 1; i < l; i++) {
+        images[1].remove()
     }
     Initialisation()
 }
