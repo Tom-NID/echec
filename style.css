@@ -54,3 +54,9 @@ body {
 	color: rgb(37, 150, 190);
 	position: absolute;
 }
+
+#biblio{
+	right: 2%;
+	top: 2%;
+	position: absolute;
+}

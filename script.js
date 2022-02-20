@@ -316,7 +316,7 @@ function Dame(pion){
     reinitialiser()
     pion_selection = pion
     let i = 1
-    while(Number(pion.case[0]) - i > - 1 && Number(pion.case[1]) - i > - 1 && (case_deplacement(pion, -i, -i) || pion_adverse(pion, -i, -i))){
+    while(test_sur_plateau(pion, -i, -i) && test_case_accessible(pion, -i, -i)){
         if(verif_case_echec(pion, -i, -i)){
             if(attaque(pion, -i, -i)){break;}
             case_rose(pion, -i, -i)
@@ -324,7 +324,7 @@ function Dame(pion){
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) - i > - 1 && Number(pion.case[1]) + i < 8 && (case_deplacement(pion, -i, i) || pion_adverse(pion, -i, i))){
+    while(test_sur_plateau(pion, -i, i) && test_case_accessible(pion, -i, i)){
         if(verif_case_echec(pion, -i, i)){
             if(attaque(pion, -i, i)){break;}
             case_rose(pion, -i, i)
@@ -332,7 +332,7 @@ function Dame(pion){
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) + i < 8 && Number(pion.case[1]) - i > - 1 && (case_deplacement(pion, i, -i) || pion_adverse(pion, i, -i))){
+    while(test_sur_plateau(pion, i, -i) && test_case_accessible(pion, i, -i)){
         if(verif_case_echec(pion, i, -i)){
             if(attaque(pion, i, -i)){break;}
             case_rose(pion, i, -i)
@@ -340,7 +340,7 @@ function Dame(pion){
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) + i < 8 && Number(pion.case[1]) + i < 8 && (case_deplacement(pion, i, i) || pion_adverse(pion, i, i))){
+    while(test_sur_plateau(pion, i, i) && test_case_accessible(pion, i, i)){
         if(verif_case_echec(pion, i, i)){
             if(attaque(pion, i, i)){break;}
             case_rose(pion, i, i)
@@ -348,7 +348,7 @@ function Dame(pion){
         i += 1
     }
     i = 1
-    while(Number(pion.case) - i * 10 > -1 && (case_deplacement(pion, -i, 0) || pion_adverse(pion, -i, 0))){
+    while(test_sur_plateau(pion, -i, 0) && test_case_accessible(pion, -i, 0)){
         if(verif_case_echec(pion, -i, 0)){
             if(attaque(pion, -i, 0)){break;}
             case_rose(pion, -i, 0)
@@ -356,7 +356,7 @@ function Dame(pion){
         i += 1
     }
     i = 1
-    while(Number(pion.case) + i * 10 < 78 && (case_deplacement(pion, i, 0) || pion_adverse(pion, i, 0))){
+    while(test_sur_plateau(pion, i, 0) && test_case_accessible(pion, i, 0)){
         if(verif_case_echec(pion, i, 0)){
             if(attaque(pion, i, 0)){break;}
             case_rose(pion, i, 0)
@@ -365,7 +365,7 @@ function Dame(pion){
         
     }
     i = 1
-    while(Number(pion.case[1]) - i > -1 && (case_deplacement(pion, 0, -i) || pion_adverse(pion, 0, -i))){
+    while(test_sur_plateau(pion, 0, -i) && test_case_accessible(pion, 0, -i)){
         if(verif_case_echec(pion, 0, -i)){
             if(attaque(pion, 0, -i)){break;}
             case_rose(pion, 0, -i)
@@ -373,7 +373,7 @@ function Dame(pion){
         i += 1
     }
     i = 1
-    while(Number(pion.case[1]) + i < 8 && (case_deplacement(pion, 0, i) || pion_adverse(pion, 0, i))){
+    while(test_sur_plateau(pion, 0, i) && test_case_accessible(pion, 0, i)){
         if(verif_case_echec(pion, 0, i)){
             if(attaque(pion, 0, i)){break;}
             case_rose(pion, 0, i)
@@ -394,7 +394,7 @@ function Fou(pion){
     reinitialiser()
     pion_selection = pion
     let i = 1
-    while(Number(pion.case[0]) - i > - 1 && Number(pion.case[1]) - i > - 1 && (case_deplacement(pion, -i, -i) || pion_adverse(pion, -i, -i))){
+    while(test_sur_plateau(pion, -i, -i) && test_case_accessible(pion, -i, -i)){
         if(verif_case_echec(pion, -i, -i)){
             if(attaque(pion, -i, -i)){break;}
             case_rose(pion, -i, -i)
@@ -402,7 +402,7 @@ function Fou(pion){
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) - i > - 1 && Number(pion.case[1]) + i < 8 && (case_deplacement(pion, -i, i) || pion_adverse(pion, -i, i))){
+    while(test_sur_plateau(pion, -i, i) && test_case_accessible(pion, -i, i)){
         if(verif_case_echec(pion, -i, i)){
             if(attaque(pion, -i, i)){break;}
             case_rose(pion, -i, i)
@@ -410,7 +410,7 @@ function Fou(pion){
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) + i < 8 && Number(pion.case[1]) - i > - 1 && (case_deplacement(pion, i, -i) || pion_adverse(pion, i, -i))){
+    while(test_sur_plateau(pion, i, -i) && test_case_accessible(pion, i, -i)){
         if(verif_case_echec(pion, i, -i)){
             if(attaque(pion, i, -i)){break;}
             case_rose(pion, i, -i)
@@ -418,7 +418,7 @@ function Fou(pion){
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) + i < 8 && Number(pion.case[1]) + i < 8 && (case_deplacement(pion, i, i) || pion_adverse(pion, i, i))){
+    while(test_sur_plateau(pion, i, i) && test_case_accessible(pion, i, i)){
         if(verif_case_echec(pion, i, i)){
             if(attaque(pion, i, i)){break;}
             case_rose(pion, i, i)
@@ -485,29 +485,29 @@ function Roi(pion){
     if(tour % 2 == 0 && pion.id[0] == 'n' || tour % 2 == 1 && pion.id[0] == 'b'){return}
     reinitialiser()
     pion_selection = pion
-    if(Number(pion.case[0]) + 1 <= 7 && (case_deplacement(pion, 1, 0) || pion_adverse(pion, 1, 0))){
+    if(test_sur_plateau(pion, 1, 0) && test_case_accessible(pion, 1, 0)){
         if(! attaque(pion, 1, 0)){case_rose(pion, 1, 0)}
     }
-    if(Number(pion.case[0]) - 1 >= 0 && (case_deplacement(pion, -1, 0) || pion_adverse(pion, -1, 0))){
+    if(test_sur_plateau(pion, -1, 0) && test_case_accessible(pion, -1, 0)){
         if(! attaque(pion, -1, 0)){case_rose(pion, -1, 0)}
     }
-    if(Number(pion.case[1]) + 1 <= 7 && (case_deplacement(pion, 0, 1) || pion_adverse(pion, 0, 1))){
+    if(test_sur_plateau(pion, 0, 1) && test_case_accessible(pion, 0, 1)){
         if(! attaque(pion, 0, 1)){case_rose(pion, 0, 1)}
     }
-    if(Number(pion.case[1]) - 1 >= 0 && (case_deplacement(pion, 0, -1) || pion_adverse(pion, 0, -1))){
+    if(test_sur_plateau(pion, 0, -1) && test_case_accessible(pion, 0, -1)){
         if(! attaque(pion, 0, -1)){case_rose(pion, 0, -1)}
     }
 
-    if(Number(pion.case[0]) + 1 <= 7 && Number(pion.case[1]) + 1 <= 7 && (case_deplacement(pion, 1, 1) || pion_adverse(pion, 1, 1))){
+    if(test_sur_plateau(pion, 1, 1) && Number(pion.case[1]) + 1 <= 7 && test_case_accessible(pion, 1, 1)){
         if(! attaque(pion, 1, 1)){case_rose(pion, 1, 1)}
     }
-    if(Number(pion.case[0]) - 1 >= 0 && Number(pion.case[1]) - 1 >= 0 && (case_deplacement(pion, -1, -1) || pion_adverse(pion, -1, -1))){
+    if(test_sur_plateau(pion, -1, -1) && Number(pion.case[1]) - 1 >= 0 && test_case_accessible(pion, -1, -1)){
         if(! attaque(pion, -1, -1)){case_rose(pion, -1, -1)}
     }
-    if(Number(pion.case[0]) + 1 <= 7 && Number(pion.case[1]) - 1 >= 0 && (case_deplacement(pion, 1, -1) || pion_adverse(pion, 1, -1))){
+    if(test_sur_plateau(pion, 1, -1) && Number(pion.case[1]) - 1 >= 0 && test_case_accessible(pion, 1, -1)){
         if(! attaque(pion, 1, -1)){case_rose(pion, 1, -1)}
     }
-    if(Number(pion.case[0]) - 1 >= 0 && Number(pion.case[1]) + 1 <= 7 && (case_deplacement(pion, -1, 1) || pion_adverse(pion, -1, 1))){
+    if(test_sur_plateau(pion, -1, 1) && Number(pion.case[1]) + 1 <= 7 && test_case_accessible(pion, -1, 1)){
         if(! attaque(pion, -1, 1)){case_rose(pion, -1, 1)}
     }
     for(let i = 0; i < pion_adverses.length; i ++){
@@ -525,7 +525,7 @@ function Tour(pion){
     pion_selection = pion
     let i = 1
 
-    while(Number(pion.case) - i * 10 > -1 && (case_deplacement(pion, -i, 0) || pion_adverse(pion, -i, 0))){
+    while(test_sur_plateau(pion, -i, 0) && test_case_accessible(pion, -i, 0)){
         if(verif_case_echec(pion, -i, 0)){
             if(attaque(pion, -i, 0)){break;}
             case_rose(pion, -i, 0)
@@ -534,7 +534,7 @@ function Tour(pion){
     }
     i = 1
 
-    while(Number(pion.case) + i * 10 < 78 && (case_deplacement(pion, i, 0) || pion_adverse(pion, i, 0))){
+    while(test_sur_plateau(pion, i, 0) && test_case_accessible(pion, i, 0)){
         if(verif_case_echec(pion, i, 0)){
             if(attaque(pion, i, 0)){break;}
             case_rose(pion, i, 0)
@@ -544,7 +544,7 @@ function Tour(pion){
     }
     i = 1
 
-    while(Number(pion.case[1]) - i > -1 && (case_deplacement(pion, 0, -i) || pion_adverse(pion, 0, -i))){
+    while(test_sur_plateau(pion, 0, -i) && test_case_accessible(pion, 0, -i)){
         if(verif_case_echec(pion, 0, -i)){
             if(attaque(pion, 0, -i)){break;}
             case_rose(pion, 0, -i)
@@ -553,7 +553,7 @@ function Tour(pion){
     }
     i = 1
 
-    while(Number(pion.case[1]) + i < 8 && (case_deplacement(pion, 0, i) || pion_adverse(pion, 0, i))){
+    while(test_sur_plateau(pion, 0, i) && test_case_accessible(pion, 0, i)){
         if(verif_case_echec(pion, 0, i)){
             if(attaque(pion, 0, i)){break;}
             case_rose(pion, 0, i)
