@@ -29,6 +29,7 @@ var Grille = [
 var pion_selection = null
 var pion_adverses = []
 var pion_echec = []
+var frame_echec = []
 var tour = 0
 var QI_blanc = 100
 var QI_noir = 100
@@ -180,7 +181,7 @@ function Initialisation(){
     tour = 0 
 
     // TEST
-    /* */
+    /* 
     let button = document.createElement("button")
     button.style.width = String(2 * largeur) + "px"
     button.style.height = String(largeur) + "px"
@@ -194,7 +195,7 @@ function Initialisation(){
     button.innerHTML = "GAGNER"
     button.onclick = function(){gagner()}
     document.body.appendChild(button)
-    /* */
+    */
 }
 
 // Rends un case accessible par un pion
@@ -249,6 +250,9 @@ function attaque(pion, i1, i2){
 }
 
 function croquer(pion){
+    if(pion.id[1] == "r"){
+        gagner(pion.id[0])
+    }
     deplacement(document.getElementById(pion.frame))
     pion.onclick = function(){return}
     pion.style.position = "static"
@@ -268,6 +272,13 @@ function test_sur_plateau(pion, i1, i2){
 
 function test_case_accessible(pion, i1, i2){
     return case_deplacement(pion, i1, i2) || pion_adverse(pion, i1, i2)
+}
+
+function test_case_accessible_roi(pion, i1, i2){
+    if(frame_echec.includes(document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))))){
+        return false
+    }
+    return true
 }
 
 function Cava(pion){
@@ -485,29 +496,29 @@ function Roi(pion){
     if(tour % 2 == 0 && pion.id[0] == 'n' || tour % 2 == 1 && pion.id[0] == 'b'){return}
     reinitialiser()
     pion_selection = pion
-    if(test_sur_plateau(pion, 1, 0) && test_case_accessible(pion, 1, 0)){
+    if(test_sur_plateau(pion, 1, 0) && test_case_accessible(pion, 1, 0) && test_case_accessible_roi(pion, 1, 0)){
         if(! attaque(pion, 1, 0)){case_rose(pion, 1, 0)}
     }
-    if(test_sur_plateau(pion, -1, 0) && test_case_accessible(pion, -1, 0)){
+    if(test_sur_plateau(pion, -1, 0) && test_case_accessible(pion, -1, 0) && test_case_accessible_roi(pion, -1, 0)){
         if(! attaque(pion, -1, 0)){case_rose(pion, -1, 0)}
     }
-    if(test_sur_plateau(pion, 0, 1) && test_case_accessible(pion, 0, 1)){
+    if(test_sur_plateau(pion, 0, 1) && test_case_accessible(pion, 0, 1) && test_case_accessible_roi(pion, 0, 1)){
         if(! attaque(pion, 0, 1)){case_rose(pion, 0, 1)}
     }
-    if(test_sur_plateau(pion, 0, -1) && test_case_accessible(pion, 0, -1)){
+    if(test_sur_plateau(pion, 0, -1) && test_case_accessible(pion, 0, -1) && test_case_accessible_roi(pion, 0, -1)){
         if(! attaque(pion, 0, -1)){case_rose(pion, 0, -1)}
     }
 
-    if(test_sur_plateau(pion, 1, 1) && test_case_accessible(pion, 1, 1)){
+    if(test_sur_plateau(pion, 1, 1) && test_case_accessible(pion, 1, 1) && test_case_accessible_roi(pion, 1, 1)){
         if(! attaque(pion, 1, 1)){case_rose(pion, 1, 1)}
     }
-    if(test_sur_plateau(pion, -1, -1) && test_case_accessible(pion, -1, -1)){
+    if(test_sur_plateau(pion, -1, -1) && test_case_accessible(pion, -1, -1) && test_case_accessible_roi(pion, -1, -1)){
         if(! attaque(pion, -1, -1)){case_rose(pion, -1, -1)}
     }
-    if(test_sur_plateau(pion, 1, -1) && test_case_accessible(pion, 1, -1)){
+    if(test_sur_plateau(pion, 1, -1) && test_case_accessible(pion, 1, -1) && test_case_accessible_roi(pion, 1, -1)){
         if(! attaque(pion, 1, -1)){case_rose(pion, 1, -1)}
     }
-    if(test_sur_plateau(pion, -1, 1) && test_case_accessible(pion, -1, 1)){
+    if(test_sur_plateau(pion, -1, 1) && test_case_accessible(pion, -1, 1) && test_case_accessible_roi(pion, -1, 1)){
         if(! attaque(pion, -1, 1)){case_rose(pion, -1, 1)}
     }
     for(let i = 0; i < pion_adverses.length; i ++){
@@ -567,8 +578,8 @@ function Tour(pion){
 
 function verif_echec(pion, i1, i2, type){
     let frame = document.getElementById(String(Number(pion.frame[0]) + i1) + (String(Number(pion.frame[1]) + i2)))
+    
     if(frame.pion != null && frame.pion.id[0] != pion.id[0] && frame.pion.id[1] == type){
-        
         pion_echec.push(frame.pion)
         if(i1 == 0){
             case_interdite(pion.frame[0], String(Number(pion.frame[1]) + i2 / Math.abs(i2))) 
@@ -645,15 +656,20 @@ function echec(pion){
         i += 1
     }
     i = 1
+
+
     while(test_sur_plateau(pion, i, i) && test_case_accessible(pion, i, i)){
         
         if(i == 1){
             if(verif_echec(pion, i, i, 'p') || verif_echec(pion, i, i, 'r')){break;}
         }
-        if(verif_echec(pion, i, i, 'f') || verif_echec(pion, i, i, 'd')){break;}
+        if(verif_echec(pion, i, i, 'f') || verif_echec(pion, i, i, 'd')){
+            break;}
         i += 1
     }
     i = 1
+
+
     while(test_sur_plateau(pion, -i, 0) && test_case_accessible(pion, -i, 0)){
         if(i == 1){
             if(verif_echec(pion, -i, 0, 'r')){
@@ -693,9 +709,11 @@ function echec(pion){
     if(pion_echec.length > 0){
         pion.echec = true
         son_echec()
+        return true
     }
     else{
         pion.echec = false
+        return false
     }
 }
 
@@ -705,10 +723,13 @@ function echec_et_mat(pion){
     for(let i = 0; i < positions.length; i++){
         if(test_sur_plateau(pion, positions[i][0], positions[i][1]) && test_case_accessible(pion, positions[i][0], positions[i][1])){
             pion.frame = String(Number(pion.frame[0]) + positions[i][0]) + String(Number(pion.frame[1]) + positions[i][1])
-            echec(pion)
+            if(echec(pion)){
+                frame_echec.push(document.getElementById(pion.frame))
             pion.frame = frame
+            }
         }
     }
+    
 }
 
 function verif_case_echec(pion, i1, i2){
@@ -743,10 +764,12 @@ function deplacement(frame){
         reinitialiser_case_echec()
         if(tour % 2 == 0){
             echec(document.getElementById("br"))
+            frame_echec = []
             echec_et_mat(document.getElementById("br"))
         }
         else{
             echec(document.getElementById("nr"))
+            frame_echec = []
             echec_et_mat(document.getElementById("nr"))
         }
     }
@@ -868,7 +891,7 @@ function reinitialiser(){
 }
 
 function sonDeplacement(frame){
-    for(let i = 0; i < 200; i++){
+    for(let i = 0; i < 10; i++){
         let SonMove = document.createElement("audio")
         if(frame.pion != null){
             SonMove.src = "Sounds/mort" + String(Math.floor(Math.random() * 11)) + ".mp3"
@@ -903,7 +926,7 @@ function dernierDeplacement(frame){
     
 }
 
-function gagner(){
+function gagner(couleur){
     let canvas = document.getElementById("canvas")
     canvas.style.zIndex = "2"
 
@@ -914,7 +937,12 @@ function gagner(){
     let text = document.getElementById("text")
     text.style.fontSize = String(largeur / 2) + "px"
     text.style.zIndex = "2"
-    text.innerHTML = "VICTOIRE DU JOUEUR ... !!"
+    if(couleur == "b"){
+        text.innerHTML = "VICTOIRE DES NOIRS !"
+    }
+    else{
+        text.innerHTML = "VICTOIRE DES BLANCS !"
+    }
 }
 
 function rejouer(){
