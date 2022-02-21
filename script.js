@@ -11,20 +11,24 @@
 - Deplacer les pions en "drag and drop"
 - mode de jeu pions aléatoires
 */
-
+for(let i = 0; i < 50; i++){
+    let SonMove = document.createElement("audio")
+    SonMove.src = "Sounds/move" + String(Math.floor(Math.random() * 4)) + ".mp3"
+    SonMove.play()
+}
 var rect = document.getElementById("plateau").getBoundingClientRect()
 
 var largeur= Math.floor(screen.width / 20)
 
 var Grille = [
-["nt", "nc", "nf", "nd", "np", "np", "nc", "nt"],
-["np", "np", "np", "np", "nr", "np", "np", "np"],
+["nt", "nc", "nf", "nd", "nr", "nf", "nc", "nt"],
+["np", "np", "np", "np", "np", "np", "np", "np"],
 [null, null, null, null, null, null, null, null],
 [null, null, null, null, null, null, null, null],
-[null, null, null, null, "bd", null, null, null],
+[null, null, null, null, null, null, null, null],
 [null, null, null, null, null, null, null, null],
 ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
-["bt", "bc", "bf", "bp", "br", "bf", "bc", "bt"]]
+["bt", "bc", "bf", "bd", "br", "bf", "bc", "bt"]]
 
 var pion_selection = null
 var pion_adverses = []
