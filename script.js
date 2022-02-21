@@ -1,10 +1,10 @@
 // AJOUTER //
 /*
-    IMPORTANT :
-- Changer de pion quand il arrive au bout du plateau
+    IMPORTANT :             
 - Pouvoir gagner
-- Connaitre les pions qu'on peut deplacer quand il y a echec
 - Style global du site
+- rock
+- prise en passant
 
     OPTIONEL:
 - Animation du deplacement des pions
@@ -17,14 +17,14 @@ var rect = document.getElementById("plateau").getBoundingClientRect()
 var largeur= Math.floor(screen.width / 20)
 
 var Grille = [
-["nt", "nc", "nf", "nd", "nr", "nf", "nc", "nt"],
-["np", "np", "np", "np", "np", "np", "np", "np"],
+["nt", "nc", "nf", "nd", "np", "np", "nc", "nt"],
+["np", "np", "np", "np", "nr", "np", "np", "np"],
 [null, null, null, null, null, null, null, null],
 [null, null, null, null, null, null, null, null],
-[null, null, null, null, null, null, null, null],
+[null, null, null, null, "bd", null, null, null],
 [null, null, null, null, null, null, null, null],
 ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
-["bt", "bc", "bf", "bd", "br", "bf", "bc", "bt"]]
+["bt", "bc", "bf", "bp", "br", "bf", "bc", "bt"]]
 
 var pion_selection = null
 var pion_adverses = []
@@ -34,7 +34,7 @@ var QI_blanc = 100
 var QI_noir = 100
 
 var fond = document.createElement('audio')
-fond.src = "Sounds/Fond.mp3"
+fond.src = "Sounds/fond" + String(Math.floor(Math.random() * 2)) + ".mp3"
 fond.volume = 1
 fond.loop = true
 
@@ -49,6 +49,7 @@ function Initialisation(){
             
             let frame = document.createElement("img")
             frame.id = String(i) + String(j)
+            frame.echec = false
             if((i+j) % 2 == 0){
                 frame.src = "Image/case_blanc.png"
                 frame.couleur = 0
@@ -64,12 +65,12 @@ function Initialisation(){
             frame.style.left = String(j * largeur) + "px"
             frame.style.top = String(i * largeur) + "px"
             frame.style.width = String(largeur) + "px"
-            frame.style.height = String(largeur) + "px"
+            // frame.style.height = String(largeur) + "px"
             frame.style.position = "absolute"
 
             if(Grille[i][j] != null){ 
                 let pion = document.createElement("img")
-                pion.case = String(i) + String(j)
+                pion.frame = String(i) + String(j)
                 pion.id = Grille[i][j]
                 
                 if(Grille[i][j][0] == "b"){
@@ -110,7 +111,7 @@ function Initialisation(){
                 pion.style.left = String(j * largeur) + "px"
                 pion.style.top = String(i * largeur) + "px"
                 pion.style.width = String(largeur) + "px"
-                pion.style.height = String(largeur) + "px"
+                // pion.style.height = String(largeur) + "px"
                 
                 frame.pion = pion
             }
@@ -125,12 +126,10 @@ function Initialisation(){
     document.getElementById("pions_noirs_morts").style.width = String( 3 * largeur) + "px"
     document.getElementById("pions_noirs_morts").style.height = String(6 * largeur) + "px"
 
-
     document.getElementById("pions_blancs_morts").style.left = String(screen.width / 2 + largeur * 4) + "px"
     document.getElementById("pions_blancs_morts").style.top = String(rect.top + largeur) + "px"
     document.getElementById("pions_blancs_morts").style.width = String( 3 * largeur) + "px"
     document.getElementById("pions_blancs_morts").style.height = String(6 * largeur) + "px"
-
 
     document.getElementById("QI_blanc").style.top = String(rect.top + 7 * largeur) + "px"
     document.getElementById("QI_blanc").style.left = String(screen.width / 2 + largeur * 5) + "px"
@@ -141,6 +140,23 @@ function Initialisation(){
     document.getElementById("QI_noir").style.left = String(screen.width / 2 - largeur * 6) + "px"
     document.getElementById("QI_noir").style.width = String(largeur) + "px"
     document.getElementById("QI_noir").style.height = String(largeur) + "px"
+
+    document.getElementById("canvas").style.width = String(largeur * 8) + "px"
+    document.getElementById("canvas").style.height = String(largeur * 8) + "px"
+
+    document.getElementById("image").style.top = String(5 * largeur) + "px"
+    document.getElementById("image").style.left = String(3 * largeur) + "px"
+    document.getElementById("image").style.width = String(2 * largeur) + "px"
+    document.getElementById("image").style.height = String(largeur) + "px"
+
+    document.getElementById("text").style.width = String(4 * largeur) + "px"
+    document.getElementById("text").style.top = String(3 * largeur) + "px"
+    document.getElementById("text").style.left = String(largeur * 2) + "px"
+
+    document.getElementById("pions_changement").style.top = String(3 * largeur) + "px"
+    document.getElementById("pions_changement").style.left = String(3 * largeur) + "px"
+    document.getElementById("pions_changement").style.width = String(2 * largeur) + "px"
+    document.getElementById("pions_changement").style.height = String(2 * largeur) + "px"
 
     let Son = document.createElement("img")
     Son.id = "son"
@@ -183,19 +199,30 @@ function Initialisation(){
 
 // Rends un case accessible par un pion
 function case_rose(pion, i1, i2){
-    if((Number(pion.case[0]) + i1 + Number(pion.case[1]) + i2) % 2 == 0){
-        document.getElementById(String(Number(pion.case[0]) + i1 + String(Number(pion.case[1]) + i2))).src = "Image/croix_blanc.png"
+    let frame = document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2)))
+    if((Number(pion.frame[0]) + i1 + Number(pion.frame[1]) + i2) % 2 == 0){
+        if(frame.echec){
+            frame.src = "Image/croix_rouge.png"
+        }
+        else{
+            frame.src = "Image/croix_blanc.png"
+        }
     }
     else{
-        document.getElementById(String(Number(pion.case[0]) + i1 + String(Number(pion.case[1]) + i2))).src = "Image/croix_noir.png"
+        if(frame.echec){
+            frame.src = "Image/croix_rouge.png"
+        }
+        else{
+            frame.src = "Image/croix_noir.png"
+        }
     }
     
-    document.getElementById(String(Number(pion.case[0]) + i1 + String(Number(pion.case[1]) + i2))).couleur = 2
+    frame.couleur = 2
 }
 
 // Renvoie True si une case est vide
 function case_deplacement(pion, i1, i2){
-    if(document.getElementById(String(Number(pion.case[0]) + i1 + String(Number(pion.case[1]) + i2))).pion == null){
+    if(document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))).pion == null){
         return true
     }
     return false
@@ -204,7 +231,8 @@ function case_deplacement(pion, i1, i2){
 // Renvoie True si il y a un pion adverse sur la case
 function pion_adverse(pion, i1, i2){
     if(! case_deplacement(pion, i1, i2)){ // temp
-        if(document.getElementById(String(Number(pion.case[0]) + i1 + String(Number(pion.case[1]) + i2))).pion.id[0] != pion.id[0]){
+        // console.log(document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))))
+        if(document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))).pion.id[0] != pion.id[0]){
             return true
         }
     }
@@ -214,16 +242,15 @@ function pion_adverse(pion, i1, i2){
 // Renvoie True si il y a un pion adverse sur la case et ajoute le pion a la liste pion_adverses
 function attaque(pion, i1, i2){
     if(! case_deplacement(pion, i1, i2) && pion_adverse(pion, i1, i2)){
-        document.getElementById(String(Number(pion.case[0]) + i1 + String(Number(pion.case[1]) + i2))).couleur = 2
-        pion_adverses.push(document.getElementById(String(Number(pion.case[0]) + i1 + String(Number(pion.case[1]) + i2))).pion)
+        document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))).couleur = 2
+        pion_adverses.push(document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))).pion)
         return true
     }
     return false
 }
 
-
 function croquer(pion){
-    deplacement(document.getElementById(pion.case))
+    deplacement(document.getElementById(pion.frame))
     pion.onclick = function(){return}
     pion.style.position = "static"
     pion.style.top = "0px"
@@ -236,6 +263,15 @@ function croquer(pion){
     }
 }
 
+function test_sur_plateau(pion, i1, i2){
+    return Number(pion.frame[0]) + i1 >= 0 && Number(pion.frame[0]) + i1 <= 7 && Number(pion.frame[1]) + i2 >= 0 && Number(pion.frame[1]) + i2 <= 7
+}
+
+function test_case_accessible(pion, i1, i2){
+    // console.log(document.getElementById(pion.frame))
+    return case_deplacement(pion, i1, i2) || pion_adverse(pion, i1, i2)
+}
+
 function Cava(pion){
     if(pion_adverses.includes(pion)){
         croquer(pion)
@@ -244,28 +280,28 @@ function Cava(pion){
     if(tour % 2 == 0 && pion.id[0] == 'n' || tour % 2 == 1 && pion.id[0] == 'b'){return}
     reinitialiser()
     pion_selection = pion
-    if(Number(pion.case[0]) - 2 >= 0 && Number(pion.case[1]) - 1 >= 0 && (case_deplacement(pion, -2, -1) || pion_adverse(pion, -2, -1))){
+    if(test_sur_plateau(pion, -2, -1) && test_case_accessible(pion, -2, -1) && verif_case_echec(pion, -2, -1)){
         if(! attaque(pion, -2, -1)){case_rose(pion, -2, -1)}
     }
-    if(Number(pion.case[0]) - 2 >= 0 && Number(pion.case[1]) + 1 <= 7 && (case_deplacement(pion, -2, 1) || pion_adverse(pion, -2, 1))){
+    if(test_sur_plateau(pion, -2, 1) && test_case_accessible(pion, -2, 1) && verif_case_echec(pion, -2, 1)){
         if(! attaque(pion, -2, 1)){case_rose(pion, -2, 1)}              
     }
-    if(Number(pion.case[0]) + 2 <= 7 && Number(pion.case[1]) - 1 >= 0 && (case_deplacement(pion, 2, -1) || pion_adverse(pion, 2, -1))){
+    if(test_sur_plateau(pion, 2, -1) && test_case_accessible(pion, 2, -1) && verif_case_echec(pion, 2, -1)){
         if(! attaque(pion, 2, -1)){case_rose(pion, 2, -1)}                
     }
-    if(Number(pion.case[0]) + 2 <= 7 && Number(pion.case[1]) + 1 <= 7 && (case_deplacement(pion, 2, 1) || pion_adverse(pion, 2, 1))){
+    if(test_sur_plateau(pion, 2, 1) && test_case_accessible(pion, 2, 1) && verif_case_echec(pion, 2, 1)){
         if(! attaque(pion, 2, 1)){case_rose(pion, 2, 1)}               
     }
-    if(Number(pion.case[0]) - 1 >= 0 && Number(pion.case[1])- 2 >= 0 && (case_deplacement(pion, -1, -2) || pion_adverse(pion, -1, -2))){
+    if(test_sur_plateau(pion, -1, -2) && test_case_accessible(pion, -1, -2) && verif_case_echec(pion, -1, -2)){
         if(! attaque(pion, -1, -2)){case_rose(pion, -1, -2)}               
     }
-    if(Number(pion.case[0]) + 1 <= 7 && Number(pion.case[1]) - 2 >= 0 && (case_deplacement(pion, 1, -2) || pion_adverse(pion, 1, -2))){
+    if(test_sur_plateau(pion, 1, -2) && test_case_accessible(pion, 1, -2) && verif_case_echec(pion, 1, -2)){
         if(! attaque(pion, 1, -2)){case_rose(pion, 1, -2)}                
     }
-    if(Number(pion.case[0]) - 1 >= 0 && Number(pion.case[1]) + 2 <= 7 && (case_deplacement(pion, -1, 2) || pion_adverse(pion, -1, 2))){
+    if(test_sur_plateau(pion, -1, 2) && test_case_accessible(pion, -1, 2) && verif_case_echec(pion, -1, 2)){
         if(! attaque(pion, -1, 2)){case_rose(pion, -1, 2)}               
     }
-    if(Number(pion.case[0]) + 1 <= 7 && Number(pion.case[1]) + 2 <= 7 && (case_deplacement(pion, 1, 2) || pion_adverse(pion, 1, 2))){
+    if(test_sur_plateau(pion, 1, 2) && test_case_accessible(pion, 1, 2) && verif_case_echec(pion, 1, 2)){
         if(! attaque(pion, 1, 2)){case_rose(pion, 1, 2)}
     }
     for(let i = 0; i < pion_adverses.length; i ++){
@@ -282,52 +318,68 @@ function Dame(pion){
     reinitialiser()
     pion_selection = pion
     let i = 1
-    while(Number(pion.case[0]) - i > - 1 && Number(pion.case[1]) - i > - 1 && (case_deplacement(pion, -i, -i) || pion_adverse(pion, -i, -i))){
-        if(attaque(pion, -i, -i)){break;}
-        case_rose(pion, -i, -i)
+    while(test_sur_plateau(pion, -i, -i) && test_case_accessible(pion, -i, -i)){
+        if(verif_case_echec(pion, -i, -i)){
+            if(attaque(pion, -i, -i)){break;}
+            case_rose(pion, -i, -i)
+        }
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) - i > - 1 && Number(pion.case[1]) + i < 8 && (case_deplacement(pion, -i, i) || pion_adverse(pion, -i, i))){
-        if(attaque(pion, -i, i)){break;}
-        case_rose(pion, -i, i)
+    while(test_sur_plateau(pion, -i, i) && test_case_accessible(pion, -i, i)){
+        if(verif_case_echec(pion, -i, i)){
+            if(attaque(pion, -i, i)){break;}
+            case_rose(pion, -i, i)
+        }
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) + i < 8 && Number(pion.case[1]) - i > - 1 && (case_deplacement(pion, i, -i) || pion_adverse(pion, i, -i))){
-        if(attaque(pion, i, -i)){break;}
-        case_rose(pion, i, -i)
+    while(test_sur_plateau(pion, i, -i) && test_case_accessible(pion, i, -i)){
+        if(verif_case_echec(pion, i, -i)){
+            if(attaque(pion, i, -i)){break;}
+            case_rose(pion, i, -i)
+        }
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) + i < 8 && Number(pion.case[1]) + i < 8 && (case_deplacement(pion, i, i) || pion_adverse(pion, i, i))){
-        if(attaque(pion, i, i)){break;}
-        case_rose(pion, i, i)
+    while(test_sur_plateau(pion, i, i) && test_case_accessible(pion, i, i)){
+        if(verif_case_echec(pion, i, i)){
+            if(attaque(pion, i, i)){break;}
+            case_rose(pion, i, i)
+        }
         i += 1
     }
     i = 1
-    while(Number(pion.case) - i * 10 > -1 && (case_deplacement(pion, -i, 0) || pion_adverse(pion, -i, 0))){
-        if(attaque(pion, -i, 0)){break;}
-        case_rose(pion, -i, 0)
+    while(test_sur_plateau(pion, -i, 0) && test_case_accessible(pion, -i, 0)){
+        if(verif_case_echec(pion, -i, 0)){
+            if(attaque(pion, -i, 0)){break;}
+            case_rose(pion, -i, 0)
+        }
         i += 1
     }
     i = 1
-    while(Number(pion.case) + i * 10 < 78 && (case_deplacement(pion, i, 0) || pion_adverse(pion, i, 0))){
-        if(attaque(pion, i, 0)){break;}
-        case_rose(pion, i, 0)
+    while(test_sur_plateau(pion, i, 0) && test_case_accessible(pion, i, 0)){
+        if(verif_case_echec(pion, i, 0)){
+            if(attaque(pion, i, 0)){break;}
+            case_rose(pion, i, 0)
+        }
         i += 1
         
     }
     i = 1
-    while(Number(pion.case[1]) - i > -1 && (case_deplacement(pion, 0, -i) || pion_adverse(pion, 0, -i))){
-        if(attaque(pion, 0, -i)){break;}
-        case_rose(pion, 0, -i)
+    while(test_sur_plateau(pion, 0, -i) && test_case_accessible(pion, 0, -i)){
+        if(verif_case_echec(pion, 0, -i)){
+            if(attaque(pion, 0, -i)){break;}
+            case_rose(pion, 0, -i)
+        }
         i += 1
     }
     i = 1
-    while(Number(pion.case[1]) + i < 8 && (case_deplacement(pion, 0, i) || pion_adverse(pion, 0, i))){
-        if(attaque(pion, 0, i)){break;}
-        case_rose(pion, 0, i)
+    while(test_sur_plateau(pion, 0, i) && test_case_accessible(pion, 0, i)){
+        if(verif_case_echec(pion, 0, i)){
+            if(attaque(pion, 0, i)){break;}
+            case_rose(pion, 0, i)
+        }
         i += 1
     }
     for(let i = 0; i < pion_adverses.length; i ++){
@@ -344,27 +396,35 @@ function Fou(pion){
     reinitialiser()
     pion_selection = pion
     let i = 1
-    while(Number(pion.case[0]) - i > - 1 && Number(pion.case[1]) - i > - 1 && (case_deplacement(pion, -i, -i) || pion_adverse(pion, -i, -i))){
-        if(attaque(pion, -i, -i)){break;}
-        case_rose(pion, -i, -i)
+    while(test_sur_plateau(pion, -i, -i) && test_case_accessible(pion, -i, -i)){
+        if(verif_case_echec(pion, -i, -i)){
+            if(attaque(pion, -i, -i)){break;}
+            case_rose(pion, -i, -i)
+        }
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) - i > - 1 && Number(pion.case[1]) + i < 8 && (case_deplacement(pion, -i, i) || pion_adverse(pion, -i, i))){
-        if(attaque(pion, -i, i)){break;}
-        case_rose(pion, -i, i)
+    while(test_sur_plateau(pion, -i, i) && test_case_accessible(pion, -i, i)){
+        if(verif_case_echec(pion, -i, i)){
+            if(attaque(pion, -i, i)){break;}
+            case_rose(pion, -i, i)
+        }
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) + i < 8 && Number(pion.case[1]) - i > - 1 && (case_deplacement(pion, i, -i) || pion_adverse(pion, i, -i))){
-        if(attaque(pion, i, -i)){break;}
-        case_rose(pion, i, -i)
+    while(test_sur_plateau(pion, i, -i) && test_case_accessible(pion, i, -i)){
+        if(verif_case_echec(pion, i, -i)){
+            if(attaque(pion, i, -i)){break;}
+            case_rose(pion, i, -i)
+        }
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) + i < 8 && Number(pion.case[1]) + i < 8 && (case_deplacement(pion, i, i) || pion_adverse(pion, i, i))){
-        if(attaque(pion, i, i)){break;}
-        case_rose(pion, i, i)
+    while(test_sur_plateau(pion, i, i) && test_case_accessible(pion, i, i)){
+        if(verif_case_echec(pion, i, i)){
+            if(attaque(pion, i, i)){break;}
+            case_rose(pion, i, i)
+        }
         i += 1
     }
     for(let i = 0; i < pion_adverses.length; i ++){
@@ -382,33 +442,33 @@ function Pion(pion){
     pion_selection = pion
     switch(pion.id){
         case "bp":
-            if(Number(pion.case[0]) - 1 >= 0 && case_deplacement(pion, -1, 0)){
+            if(Number(pion.frame[0]) - 1 >= 0 && case_deplacement(pion, -1, 0) && verif_case_echec(pion, -1, 0)){
                 case_rose(pion, -1, 0)
             }
-            if(Number(pion.case[0]) - 1 >= 0 && Number(pion.case[1]) - 1 >= 0){
+            if(Number(pion.frame[0]) - 1 >= 0 && Number(pion.frame[1]) - 1 >= 0 && verif_case_echec(pion, -1, -1)){
                 attaque(pion, -1, -1)
             }
-            if(Number(pion.case[0]) - 1 >= 0 && Number(pion.case[1]) + 1 <= 7){
+            if(Number(pion.frame[0]) - 1 >= 0 && Number(pion.frame[1]) + 1 <= 7 && verif_case_echec(pion, -1, 1)){
                 attaque(pion, -1, 1)
             }
             if(! pion.move){
-                if(Number(pion.case[0]) - 2 >= 0 && case_deplacement(pion, -2, 0) && case_deplacement(pion, -1, 0)){
+                if(Number(pion.frame[0]) - 2 >= 0 && case_deplacement(pion, -2, 0) && case_deplacement(pion, -1, 0) && verif_case_echec(pion, -2, 0)){
                     case_rose(pion, -2, 0)
                 }
             }
             break;
         case "np":
-            if(Number(pion.case[0]) + 1 <= 7 && case_deplacement(pion, 1, 0)){
+            if(Number(pion.frame[0]) + 1 <= 7 && case_deplacement(pion, 1, 0) && verif_case_echec(pion, 1, 0)){
                 case_rose(pion, 1, 0)
             }
-            if(Number(pion.case[0]) + 1 <= 7 && Number(pion.case[1]) - 1 >= 0){
+            if(Number(pion.frame[0]) + 1 <= 7 && Number(pion.frame[1]) - 1 >= 0 && verif_case_echec(pion, 1, -1)){
                 attaque(pion, 1, -1)
             }
-            if(Number(pion.case[0]) + 1 <= 7 && Number(pion.case[1]) + 1 <= 7){
+            if(Number(pion.frame[0]) + 1 <= 7 && Number(pion.frame[1]) + 1 <= 7 && verif_case_echec(pion, 1, 1)){
                 attaque(pion, 1, 1)
             }
             if(! pion.move){
-                if(Number(pion.case[0]) + 2 <= 7 && case_deplacement(pion, 2, 0) && case_deplacement(pion, 1, 0)){
+                if(Number(pion.frame[0]) + 2 <= 7 && case_deplacement(pion, 2, 0) && case_deplacement(pion, 1, 0) && verif_case_echec(pion, 2, 0)){
                     case_rose(pion, 2, 0)
                 }
             }
@@ -427,29 +487,29 @@ function Roi(pion){
     if(tour % 2 == 0 && pion.id[0] == 'n' || tour % 2 == 1 && pion.id[0] == 'b'){return}
     reinitialiser()
     pion_selection = pion
-    if(Number(pion.case[0]) + 1 <= 7 && (case_deplacement(pion, 1, 0) || pion_adverse(pion, 1, 0))){
+    if(test_sur_plateau(pion, 1, 0) && test_case_accessible(pion, 1, 0)){
         if(! attaque(pion, 1, 0)){case_rose(pion, 1, 0)}
     }
-    if(Number(pion.case[0]) - 1 >= 0 && (case_deplacement(pion, -1, 0) || pion_adverse(pion, -1, 0))){
+    if(test_sur_plateau(pion, -1, 0) && test_case_accessible(pion, -1, 0)){
         if(! attaque(pion, -1, 0)){case_rose(pion, -1, 0)}
     }
-    if(Number(pion.case[1]) + 1 <= 7 && (case_deplacement(pion, 0, 1) || pion_adverse(pion, 0, 1))){
+    if(test_sur_plateau(pion, 0, 1) && test_case_accessible(pion, 0, 1)){
         if(! attaque(pion, 0, 1)){case_rose(pion, 0, 1)}
     }
-    if(Number(pion.case[1]) - 1 >= 0 && (case_deplacement(pion, 0, -1) || pion_adverse(pion, 0, -1))){
+    if(test_sur_plateau(pion, 0, -1) && test_case_accessible(pion, 0, -1)){
         if(! attaque(pion, 0, -1)){case_rose(pion, 0, -1)}
     }
 
-    if(Number(pion.case[0]) + 1 <= 7 && Number(pion.case[1]) + 1 <= 7 && (case_deplacement(pion, 1, 1) || pion_adverse(pion, 1, 1))){
+    if(test_sur_plateau(pion, 1, 1) && test_case_accessible(pion, 1, 1)){
         if(! attaque(pion, 1, 1)){case_rose(pion, 1, 1)}
     }
-    if(Number(pion.case[0]) - 1 >= 0 && Number(pion.case[1]) - 1 >= 0 && (case_deplacement(pion, -1, -1) || pion_adverse(pion, -1, -1))){
+    if(test_sur_plateau(pion, -1, -1) && test_case_accessible(pion, -1, -1)){
         if(! attaque(pion, -1, -1)){case_rose(pion, -1, -1)}
     }
-    if(Number(pion.case[0]) + 1 <= 7 && Number(pion.case[1]) - 1 >= 0 && (case_deplacement(pion, 1, -1) || pion_adverse(pion, 1, -1))){
+    if(test_sur_plateau(pion, 1, -1) && test_case_accessible(pion, 1, -1)){
         if(! attaque(pion, 1, -1)){case_rose(pion, 1, -1)}
     }
-    if(Number(pion.case[0]) - 1 >= 0 && Number(pion.case[1]) + 1 <= 7 && (case_deplacement(pion, -1, 1) || pion_adverse(pion, -1, 1))){
+    if(test_sur_plateau(pion, -1, 1) && test_case_accessible(pion, -1, 1)){
         if(! attaque(pion, -1, 1)){case_rose(pion, -1, 1)}
     }
     for(let i = 0; i < pion_adverses.length; i ++){
@@ -467,83 +527,116 @@ function Tour(pion){
     pion_selection = pion
     let i = 1
 
-    while(Number(pion.case) - i * 10 > -1 && (case_deplacement(pion, -i, 0) || pion_adverse(pion, -i, 0))){
-        if(attaque(pion, -i, 0)){break;}
-        case_rose(pion, -i, 0)
+    while(test_sur_plateau(pion, -i, 0) && test_case_accessible(pion, -i, 0)){
+        if(verif_case_echec(pion, -i, 0)){
+            if(attaque(pion, -i, 0)){break;}
+            case_rose(pion, -i, 0)
+        }
         i += 1
     }
     i = 1
 
-    while(Number(pion.case) + i * 10 < 78 && (case_deplacement(pion, i, 0) || pion_adverse(pion, i, 0))){
-        if(attaque(pion, i, 0)){break;}
-        case_rose(pion, i, 0)
+    while(test_sur_plateau(pion, i, 0) && test_case_accessible(pion, i, 0)){
+        if(verif_case_echec(pion, i, 0)){
+            if(attaque(pion, i, 0)){break;}
+            case_rose(pion, i, 0)
+        }
         i += 1
         
     }
     i = 1
 
-    while(Number(pion.case[1]) - i > -1 && (case_deplacement(pion, 0, -i) || pion_adverse(pion, 0, -i))){
-        if(attaque(pion, 0, -i)){break;}
-        case_rose(pion, 0, -i)
+    while(test_sur_plateau(pion, 0, -i) && test_case_accessible(pion, 0, -i)){
+        if(verif_case_echec(pion, 0, -i)){
+            if(attaque(pion, 0, -i)){break;}
+            case_rose(pion, 0, -i)
+        }
         i += 1
     }
     i = 1
 
-    while(Number(pion.case[1]) + i < 8 && (case_deplacement(pion, 0, i) || pion_adverse(pion, 0, i))){
-        if(attaque(pion, 0, i)){break;}
-        case_rose(pion, 0, i)
+    while(test_sur_plateau(pion, 0, i) && test_case_accessible(pion, 0, i)){
+        if(verif_case_echec(pion, 0, i)){
+            if(attaque(pion, 0, i)){break;}
+            case_rose(pion, 0, i)
+        }
         i += 1
     }
     for(let i = 0; i < pion_adverses.length; i ++){
         pion_adverses[i].src = "Image/mort.png"
     }
 }
-function verif_echec(pion, i1, i2, id){
-    if(! case_deplacement(pion, i1, i2) && pion_adverse(pion, i1, i2)){
-        if(document.getElementById(String(Number(pion.case[0]) + i1 + String(Number(pion.case[1]) + i2))).pion.id[1] == id){
-            pion_echec.push(document.getElementById(String(Number(pion.case[0]) + i1 + String(Number(pion.case[1]) + i2))).pion)
-            return true
+
+function verif_echec(pion, i1, i2, type){
+    let frame = document.getElementById(String(Number(pion.frame[0]) + i1) + (String(Number(pion.frame[1]) + i2)))
+    // console.log(frame, frame.pion != null)
+    if(frame.pion != null && frame.pion.id[0] != pion.id[0] && frame.pion.id[1] == type){
+        
+        pion_echec.push(frame.pion)
+        if(i1 == 0){
+            case_interdite(pion.frame[0], String(Number(pion.frame[1]) + i2 / Math.abs(i2))) 
         }
+        if(i2 == 0){
+            case_interdite(String(Number(pion.frame[0]) + i1 / Math.abs(i1)), pion.frame[1])
+        }
+        if(i1 != 0 && i2 != 0){
+            case_interdite(String(Number(pion.frame[0]) + i1 / Math.abs(i1)), String(Number(pion.frame[1]) + i2 / Math.abs(i2)))
+        }
+        return true
     }
     return false
 }
 
+function case_interdite(i1, i2){
+    let frame = document.getElementById(i1 + i2)
+    frame.src = "Image/case_rouge.png"
+    frame.echec = true
+    document.getElementById(pion_echec[pion_echec.length - 1].frame).src = "Image/case_rouge.png"
+    document.getElementById(pion_echec[pion_echec.length - 1].frame).echec = true
+}
 
 function echec(pion){
-    if(Number(pion.case[0]) - 2 >= 0 && Number(pion.case[1]) - 1 >= 0 && pion_adverse(pion, -2, -1)){
+    pion_echec = []
+    /*console.log("")
+    console.log("")
+    console.log("")*/
+    console.log(pion.frame, document.getElementById(pion.frame))
+    if(test_sur_plateau(pion, -2, -1) && pion_adverse(pion, -2, -1)){
         verif_echec(pion, -2, -1, 'c')
     }
-    if(Number(pion.case[0]) - 2 >= 0 && Number(pion.case[1]) + 1 <= 7 && pion_adverse(pion, -2, 1)){
+    if(test_sur_plateau(pion, -2, 1) && pion_adverse(pion, -2, 1)){
         verif_echec(pion, -2, 1, 'c')
     }
-    if(Number(pion.case[0]) + 2 <= 7 && Number(pion.case[1]) - 1 >= 0 && pion_adverse(pion, 2, -1)){
+    if(test_sur_plateau(pion, 2, -1) && pion_adverse(pion, 2, -1)){
         verif_echec(pion, 2, -1, 'c')
     }
-    if(Number(pion.case[0]) + 2 <= 7 && Number(pion.case[1]) + 1 <= 7 && pion_adverse(pion, 2, 1)){
+    if(test_sur_plateau(pion, 2, 1) && pion_adverse(pion, 2, 1)){
         verif_echec(pion, 2, 1, 'c')
     }
-    if(Number(pion.case[0]) - 1 >= 0 && Number(pion.case[1])- 2 >= 0 && pion_adverse(pion, -1, -2)){
+    if(test_sur_plateau(pion, -1, -2) && pion_adverse(pion, -1, -2)){
         verif_echec(pion, -1, -2, 'c')
     }
-    if(Number(pion.case[0]) + 1 <= 7 && Number(pion.case[1]) - 2 >= 0 && pion_adverse(pion, 1, -2)){
+    if(test_sur_plateau(pion, 1, -2) && pion_adverse(pion, 1, -2)){
         verif_echec(pion, 1, -2, 'c')
     }
-    if(Number(pion.case[0]) - 1 >= 0 && Number(pion.case[1]) + 2 <= 7 && pion_adverse(pion, -1, 2)){
+    if(test_sur_plateau(pion, -1, 2) && pion_adverse(pion, -1, 2)){
         verif_echec(pion, -1, 2, 'c')
     }
-    if(Number(pion.case[0]) + 1 <= 7 && Number(pion.case[1]) + 2 <= 7 && pion_adverse(pion, 1, 2)){
+    if(test_sur_plateau(pion, 1, 2) && pion_adverse(pion, 1, 2)){
         verif_echec(pion, 1, 2, 'c')
     }
     let i = 1
-    while(Number(pion.case[0]) - i > - 1 && Number(pion.case[1]) - i > - 1 && (case_deplacement(pion, -i, -i) || pion_adverse(pion, -i, -i))){
+    while(test_sur_plateau(pion, -i, -i) && test_case_accessible(pion, -i, -i)){
         if(i == 1){
-            if(verif_echec(pion, -i, -i, 'p') || verif_echec(pion, -i, -i, 'r')){break;}
+            if(verif_echec(pion, -i, -i, 'p') || verif_echec(pion, -i, -i, 'r')){break;
+            }
         }
         if(verif_echec(pion, -i, -i, 'f') || verif_echec(pion, -i, -i, 'd')){break;}
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) - i > - 1 && Number(pion.case[1]) + i < 8 && (case_deplacement(pion, -i, i) || pion_adverse(pion, -i, i))){
+    while(test_sur_plateau(pion, -i, i) && test_case_accessible(pion, -i, i)){
+        
         if(i == 1){
             if(verif_echec(pion, -i, i, 'p') || verif_echec(pion, -i, i, 'r')){break;}
         }
@@ -551,7 +644,7 @@ function echec(pion){
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) + i < 8 && Number(pion.case[1]) - i > - 1 && (case_deplacement(pion, i, -i) || pion_adverse(pion, i, -i))){
+    while(test_sur_plateau(pion, i, -i) && test_case_accessible(pion, i, -i)){
         if(i == 1){
             if(verif_echec(pion, i, -i, 'p') || verif_echec(pion, i, -i, 'r')){break;}
         }
@@ -559,45 +652,52 @@ function echec(pion){
         i += 1
     }
     i = 1
-    while(Number(pion.case[0]) + i < 8 && Number(pion.case[1]) + i < 8 && (case_deplacement(pion, i, i) || pion_adverse(pion, i, i))){
+    
+    console.log(test_case_accessible(pion, i, i), pion.frame, i, i, document.getElementById(String(Number(pion.frame[0]) + i) + (String(Number(pion.frame[1]) + i))))
+    while(test_sur_plateau(pion, i, i) && test_case_accessible(pion, i, i)){
+        
         if(i == 1){
+            console.log(verif_echec(pion, i, i, 'p'), verif_echec(pion, i, i, 'r'))
             if(verif_echec(pion, i, i, 'p') || verif_echec(pion, i, i, 'r')){break;}
         }
+        console.log(verif_echec(pion, i, i, 'f'), verif_echec(pion, i, i, 'd'))
+        /*console.log("")
+        console.log("")
+        console.log("")*/
         if(verif_echec(pion, i, i, 'f') || verif_echec(pion, i, i, 'd')){break;}
         i += 1
     }
     i = 1
-    while(Number(pion.case) - i * 10 > -1 && (case_deplacement(pion, -i, 0) || pion_adverse(pion, -i, 0))){
+    while(test_sur_plateau(pion, -i, 0) && test_case_accessible(pion, -i, 0)){
         if(i == 1){
-            if(verif_echec(pion, -i, 0, 'p') || verif_echec(pion, -i, 0, 'r')){
+            if(verif_echec(pion, -i, 0, 'r')){
                 break;}
         }
         if(verif_echec(pion, -i, 0, 't') || verif_echec(pion, -i, 0, 'd')){break;}
         i += 1
     }
     i = 1
-    while(Number(pion.case) + i * 10 < 78 && (case_deplacement(pion, i, 0) || pion_adverse(pion, i, 0))){
+    while(test_sur_plateau(pion, i, 0) && test_case_accessible(pion, i, 0)){
         if(i == 1){
-            if(verif_echec(pion, i, 0, 'p') || verif_echec(pion, i, 0, 'r')){
+            if(verif_echec(pion, i, 0, 'r')){
                 break;}
         }
         if(verif_echec(pion, i, 0, 't') || verif_echec(pion, i, 0, 'd')){break;}
         i += 1
-        
     }
     i = 1
-    while(Number(pion.case[1]) - i > -1 && (case_deplacement(pion, 0, -i) || pion_adverse(pion, 0, -i))){
+    while(test_sur_plateau(pion, 0, -i) && test_case_accessible(pion, 0, -i)){
         if(i == 1){
-            if(verif_echec(pion, 0, -i, 'p') || verif_echec(pion, 0, -i, 'r')){
+            if(verif_echec(pion, 0, -i, 'r')){
                 break;}
         }
         if(verif_echec(pion, 0, -i, 't') || verif_echec(pion, 0, -i, 'd')){break;}
         i += 1
     }
     i = 1
-    while(Number(pion.case[1]) + i < 8 && (case_deplacement(pion, 0, i) || pion_adverse(pion, 0, i))){
+    while(test_sur_plateau(pion, 0, i) && test_case_accessible(pion, 0, i)){
         if(i == 1){
-            if(verif_echec(pion, 0, i, 'p') || verif_echec(pion, 0, i, 'r')){
+            if(verif_echec(pion, 0, i, 'r')){
                 break;
             }
         }
@@ -607,13 +707,39 @@ function echec(pion){
     if(pion_echec.length > 0){
         pion.echec = true
         son_echec()
-        console.log("echec", pion, pion_adverses)
+        // console.log("echec", pion, pion_adverses)
     }
     else{
         pion.echec = false
-        console.log("pas echec", pion)
+        // console.log("pas echec", pion)
     }
-    pion_echec = []
+}
+
+function echec_et_mat(pion){
+    let frame = pion.frame
+    let positions = [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]
+    for(let i = 0; i < positions.length; i++){
+        if(test_sur_plateau(pion, positions[i][0], positions[i][1]) && test_case_accessible(pion, positions[i][0], positions[i][1])){
+            pion.frame = String(Number(pion.frame[0]) + positions[i][0]) + String(Number(pion.frame[1]) + positions[i][1])
+            echec(pion)
+            pion.frame = frame
+        }
+    }
+}
+
+function verif_case_echec(pion, i1, i2){
+    if(pion_echec.length > 0){
+        let frame = document.getElementById(String(Number(pion.frame[0]) + i1) + String(Number(pion.frame[1]) + i2))
+        // console.log(frame)
+        if(frame.echec == true){return true}
+        for(let i = 0; i < pion_echec.length; i++){
+            if(pion_echec[i].frame == frame.id){
+                return true
+            }
+        }
+        return false
+    }
+    return true
 }
 
 function deplacement(frame){
@@ -623,38 +749,139 @@ function deplacement(frame){
         pion_selection.style.left = String(Number(frame.id[1]) * largeur) + "px"
         sonDeplacement(frame)
         dernierDeplacement(frame)
-        document.getElementById(pion_selection.case).pion = null
+        document.getElementById(pion_selection.frame).pion = null
         frame.pion = pion_selection
-        pion_selection.case = frame.id
+        pion_selection.frame = frame.id
+        if((pion_selection.frame[0] == "0" && pion_selection.id == "bp") || (pion_selection.frame[0] == "7" && pion_selection.id == "np")){changement_pion(pion_selection)}
+        
         QI()
-        tour += 1     
-    }
-    if(tour % 2 == 0){
-        echec(document.getElementById("br"))
-    }
-    else{
-        echec(document.getElementById("nr"))
+        tour += 1
+
+        reinitialiser_case_echec()
+        if(tour % 2 == 0){
+            echec(document.getElementById("br"))
+            echec_et_mat(document.getElementById("br"))
+        }
+        else{
+            echec(document.getElementById("nr"))
+            echec_et_mat(document.getElementById("nr"))
+        }
     }
     reinitialiser()
 }
 
+function changement_pion(pion){
+    let pions = ["d", "t", "c", "f"]
+    document.getElementById("canvas").style.zIndex = "2"
+
+    document.getElementById("pions_changement").style.zIndex = "2"
+    pions_changement = document.getElementsByClassName("pions_changement")
+
+    for (let i = 0; i < pions_changement.length; i++) {
+        pions_changement[i].style.width = String(largeur) + "px"
+        if(pion.id[0] == "b"){
+            pions_changement[i].src = "Image/Blanc/b" + pions[i] + ".png"
+        }
+        else{
+            pions_changement[i].src = "Image/Noir/n" + pions[i] + ".png"
+        }
+        
+        pions_changement[i].onclick = function(){
+            let pions = ["d", "t", "c", "f"]
+            pion.src = this.src
+            // console.log("this.id =", this.id)
+            pion.id = pion.id[0] + pions[Number(this.id) - 1]
+            // console.log("pions[Number(this.id)] =", pions[Number(this.id)])
+            // console.log("pion.id =", pion.id)
+            switch(this.id){
+                case "1":
+                    pion.onclick = function(){Dame(this)}
+                    break;
+                case "2":
+                    pion.onclick = function(){Tour(this)}
+                    break;
+                case "3":
+                    pion.onclick = function(){Cava(this)}
+                    break;
+                case "4":
+                    pion.onclick = function(){Fou(this)}
+                    break;
+            }
+            document.getElementById("canvas").style.zIndex = "-1"
+            document.getElementById("pions_changement").style.zIndex = "-1"
+        }
+    }
+}
+
+function reinitialiser_case_echec(){
+    for(let i = 0; i < 8; i++){
+        for(let j = 0; j < 8; j++){
+            if(document.getElementById(String(i) + String(j)).echec){
+                document.getElementById(String(i) + String(j)).echec = false
+            }
+        }
+    }
+}
+
+function reinitialiser_case_blanc(frame){
+    if(Math.floor(Math.random() * 10000) > 0){
+        frame.src = "Image/case_blanc.png"
+    }
+    else{
+        if(Math.floor(Math.random() * 100) > 0){
+            frame.src = "Image/berthelon_blanc.png"
+            console.log("monsieur berthelon !")
+        }
+        else{
+            frame.src = "Image/prof_jaquot.png"
+            console.log("Prof jaquot !")
+        }
+    }
+}
+
+function reinitialiser_case_bnoir(frame){
+    if(Math.floor(Math.random() * 10000) > 0){
+        frame.src = "Image/case_noir.png"
+    }
+    else{
+        if(Math.floor(Math.random() * 100) > 0){
+            frame.src = "Image/berthelon_noir.png"
+            console.log("monsieur berthelon !")
+        }
+        else{
+            frame.src = "Image/prof_jaquot.png"
+            console.log("Prof jaquot !")
+        }
+    }
+}
+
 function reinitialiser(){
+    // console.log("reinitialiser")
     for(let i = 0; i < 8; i++){
         for(let j = 0; j < 8; j++){
             let frame = document.getElementById(String(i) + String(j))
-            if(frame.couleur == 2){
-                frame.couleur = (i+j) % 2
+            if(! frame.echec){
+                if(frame.couleur == 2){
+                    frame.couleur = (i+j) % 2
+                }
+                if(frame.couleur == 0){
+                    reinitialiser_case_blanc(frame)
+                }
+                if(frame.couleur == 1){
+                    reinitialiser_case_bnoir(frame)
+                }   
+                if(frame.couleur == 3){
+                    frame.src = "Image/case_jaune.png"     
+                    frame.couleur = (i+j) % 2
+                }
             }
-            if(frame.couleur == 0){
-                frame.src = "Image/case_blanc.png"
-            }
-            if(frame.couleur == 1){
-                frame.src = "Image/case_noir.png"
-            }   
-            if(frame.couleur == 3){
-                console.log("AAAAAAAAAAAA")
-                frame.src = "Image/case_jaune.png"     
-                frame.couleur = (i+j) % 2
+            else{
+                if(frame.couleur == 2){
+                    frame.couleur = (i+j) % 2
+                }
+                if(frame.couleur == 0 || frame.couleur == 1){
+                    frame.src = "Image/case_rouge.png"
+                }
             }
         }
     }
@@ -666,14 +893,16 @@ function reinitialiser(){
 }
 
 function sonDeplacement(frame){
-    let SonMove = document.createElement("audio")
-    if(frame.pion != null){
-        SonMove.src = "Sounds/mort" + String(Math.floor(Math.random() * 11)) + ".mp3"
+    for(let i = 0; i < 200; i++){
+        let SonMove = document.createElement("audio")
+        if(frame.pion != null){
+            SonMove.src = "Sounds/mort" + String(Math.floor(Math.random() * 11)) + ".mp3"
+        }
+        else{
+            SonMove.src = "Sounds/move" + String(Math.floor(Math.random() * 7)) + ".mp3"
+        }
+        SonMove.play()
     }
-    else{
-        SonMove.src = "Sounds/move" + String(Math.floor(Math.random() * 7)) + ".mp3"
-    }
-    SonMove.play()
 }
 
 function son_echec(){
@@ -694,50 +923,23 @@ function QI(){
 }
 
 function dernierDeplacement(frame){
-    document.getElementById(pion_selection.case).couleur = 3
+    document.getElementById(pion_selection.frame).couleur = 3
     frame.couleur = 3
     
 }
 
 function gagner(){
-    let canvas = document.createElement("canvas")
-    canvas.id = "canvas"
-    canvas.style.position = "absolute"
-    canvas.style.top = String(rect.top) + "px"
-    canvas.style.left = String(screen.width / 2 - largeur * 4) + "px"
-    canvas.style.backgroundColor = "rgba(224,224,224, 0.85)"
-    canvas.style.width = String(largeur * 8) + "px"
-    canvas.style.height = String(largeur * 8) + "px"
-    canvas.style.zIndex = "1"
-    document.body.appendChild(canvas)
+    let canvas = document.getElementById("canvas")
+    canvas.style.zIndex = "2"
 
-    let bouton = document.createElement("img")
-    bouton.id = "image"
-    bouton.style.width = String(2 * largeur) + "px"
-    bouton.style.height = String(largeur) + "px"
-    bouton.style.top = String(rect.top + 5 * largeur) + "px"
-    bouton.style.left = String(screen.width / 2 - largeur) + "px"
-    bouton.style.position = "absolute"
-    bouton.style.zIndex = "2"
-    bouton.src = "Image/buzzer.png"
-    bouton.onclick = function(){rejouer()}
-    document.body.appendChild(bouton)
+    let image = document.getElementById("image")
+    image.style.zIndex = "2"
+    image.onclick = function(){rejouer()}
 
-    let text = document.createElement("h1")
-    text.id = "text"
+    let text = document.getElementById("text")
     text.style.fontSize = String(largeur / 2) + "px"
-
-    text.style.backgroundImage = "linear-gradient(to bottom right, violet, indigo, blue, green, yellow, orange, red)"
-    text.style.textAlign = "center"
-    text.style.width = String(4 * largeur) + "px"
-    text.style.top = String(rect.top + 3 * largeur) + "px"
-    text.style.left = String(screen.width / 2 - largeur * 2) + "px"
-    text.style.position = "absolute"
     text.style.zIndex = "2"
     text.innerHTML = "VICTOIRE DU JOUEUR ... !!"
-    document.body.appendChild(text)
-
-
 }
 
 function rejouer(){
@@ -745,13 +947,14 @@ function rejouer(){
     document.getElementById("QI_noir").innerHTML = "QI : "
     QI_blanc = 100
     QI_noir = 100
-    document.getElementById("image").remove()
-    document.getElementById("canvas").remove()
-    document.getElementById("text").remove()
+    document.getElementById("image").style.zIndex = "-1"
+    document.getElementById("canvas").style.zIndex = "-1"
+    document.getElementById("text").style.zIndex = "-1"
+    document.getElementById("pions_changement").style.zIndex = "-1"
     let images = document.getElementsByTagName("img")
     l = images.length
-    for (let i = 0; i < l; i++) {
-        images[0].remove()
+    for (let i = 5; i < l; i++) {
+        images[5].remove()
     }
     Initialisation()
 }
