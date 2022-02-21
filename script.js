@@ -719,14 +719,15 @@ function echec(pion){
 
 function echec_et_mat(pion){
     let frame = pion.frame
+    console.log(frame)
     let positions = [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]
     for(let i = 0; i < positions.length; i++){
         if(test_sur_plateau(pion, positions[i][0], positions[i][1]) && test_case_accessible(pion, positions[i][0], positions[i][1])){
             pion.frame = String(Number(pion.frame[0]) + positions[i][0]) + String(Number(pion.frame[1]) + positions[i][1])
             if(echec(pion)){
                 frame_echec.push(document.getElementById(pion.frame))
-            pion.frame = frame
             }
+            pion.frame = frame
         }
     }
     
@@ -763,14 +764,19 @@ function deplacement(frame){
 
         reinitialiser_case_echec()
         if(tour % 2 == 0){
-            echec(document.getElementById("br"))
             frame_echec = []
             echec_et_mat(document.getElementById("br"))
+            reinitialiser_case_rouge()
+            echec(document.getElementById("br"))
+            
+            
         }
         else{
-            echec(document.getElementById("nr"))
             frame_echec = []
             echec_et_mat(document.getElementById("nr"))
+            reinitialiser_case_rouge()
+            echec(document.getElementById("nr"))
+            
         }
     }
     reinitialiser()
@@ -840,7 +846,7 @@ function reinitialiser_case_blanc(frame){
     }
 }
 
-function reinitialiser_case_bnoir(frame){
+function reinitialiser_case_noir(frame){
     if(Math.floor(Math.random() * 10000) > 0){
         frame.src = "Image/case_noir.png"
     }
@@ -850,6 +856,21 @@ function reinitialiser_case_bnoir(frame){
         }
         else{
             frame.src = "Image/prof_jaquot.png"
+        }
+    }
+}
+
+function reinitialiser_case_rouge(){
+    for(let i = 0; i < 8; i++){
+        for(let j = 0; j < 8; j++){
+            if(document.getElementById(String(i) + String(j)).echec){
+                if((i + j) % 2 == 0){
+                    reinitialiser_case_blanc(document.getElementById(String(i) + String(j)))
+                }
+                else{
+                    reinitialiser_case_noir(document.getElementById(String(i) + String(j)))
+                }
+            }
         }
     }
 }
@@ -866,7 +887,7 @@ function reinitialiser(){
                     reinitialiser_case_blanc(frame)
                 }
                 if(frame.couleur == 1){
-                    reinitialiser_case_bnoir(frame)
+                    reinitialiser_case_noir(frame)
                 }   
                 if(frame.couleur == 3){
                     frame.src = "Image/case_jaune.png"     
@@ -891,7 +912,7 @@ function reinitialiser(){
 }
 
 function sonDeplacement(frame){
-    for(let i = 0; i < 10; i++){
+    for(let i = 0; i < 250; i++){
         let SonMove = document.createElement("audio")
         if(frame.pion != null){
             SonMove.src = "Sounds/mort" + String(Math.floor(Math.random() * 11)) + ".mp3"
