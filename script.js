@@ -231,7 +231,6 @@ function case_deplacement(pion, i1, i2){
 // Renvoie True si il y a un pion adverse sur la case
 function pion_adverse(pion, i1, i2){
     if(! case_deplacement(pion, i1, i2)){ // temp
-        // console.log(document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))))
         if(document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))).pion.id[0] != pion.id[0]){
             return true
         }
@@ -268,7 +267,6 @@ function test_sur_plateau(pion, i1, i2){
 }
 
 function test_case_accessible(pion, i1, i2){
-    // console.log(document.getElementById(pion.frame))
     return case_deplacement(pion, i1, i2) || pion_adverse(pion, i1, i2)
 }
 
@@ -569,7 +567,6 @@ function Tour(pion){
 
 function verif_echec(pion, i1, i2, type){
     let frame = document.getElementById(String(Number(pion.frame[0]) + i1) + (String(Number(pion.frame[1]) + i2)))
-    // console.log(frame, frame.pion != null)
     if(frame.pion != null && frame.pion.id[0] != pion.id[0] && frame.pion.id[1] == type){
         
         pion_echec.push(frame.pion)
@@ -597,10 +594,6 @@ function case_interdite(i1, i2){
 
 function echec(pion){
     pion_echec = []
-    /*console.log("")
-    console.log("")
-    console.log("")*/
-    console.log(pion.frame, document.getElementById(pion.frame))
     if(test_sur_plateau(pion, -2, -1) && pion_adverse(pion, -2, -1)){
         verif_echec(pion, -2, -1, 'c')
     }
@@ -652,18 +645,11 @@ function echec(pion){
         i += 1
     }
     i = 1
-    
-    console.log(test_case_accessible(pion, i, i), pion.frame, i, i, document.getElementById(String(Number(pion.frame[0]) + i) + (String(Number(pion.frame[1]) + i))))
     while(test_sur_plateau(pion, i, i) && test_case_accessible(pion, i, i)){
         
         if(i == 1){
-            console.log(verif_echec(pion, i, i, 'p'), verif_echec(pion, i, i, 'r'))
             if(verif_echec(pion, i, i, 'p') || verif_echec(pion, i, i, 'r')){break;}
         }
-        console.log(verif_echec(pion, i, i, 'f'), verif_echec(pion, i, i, 'd'))
-        /*console.log("")
-        console.log("")
-        console.log("")*/
         if(verif_echec(pion, i, i, 'f') || verif_echec(pion, i, i, 'd')){break;}
         i += 1
     }
@@ -707,11 +693,9 @@ function echec(pion){
     if(pion_echec.length > 0){
         pion.echec = true
         son_echec()
-        // console.log("echec", pion, pion_adverses)
     }
     else{
         pion.echec = false
-        // console.log("pas echec", pion)
     }
 }
 
@@ -730,7 +714,6 @@ function echec_et_mat(pion){
 function verif_case_echec(pion, i1, i2){
     if(pion_echec.length > 0){
         let frame = document.getElementById(String(Number(pion.frame[0]) + i1) + String(Number(pion.frame[1]) + i2))
-        // console.log(frame)
         if(frame.echec == true){return true}
         for(let i = 0; i < pion_echec.length; i++){
             if(pion_echec[i].frame == frame.id){
@@ -789,10 +772,7 @@ function changement_pion(pion){
         pions_changement[i].onclick = function(){
             let pions = ["d", "t", "c", "f"]
             pion.src = this.src
-            // console.log("this.id =", this.id)
             pion.id = pion.id[0] + pions[Number(this.id) - 1]
-            // console.log("pions[Number(this.id)] =", pions[Number(this.id)])
-            // console.log("pion.id =", pion.id)
             switch(this.id){
                 case "1":
                     pion.onclick = function(){Dame(this)}
@@ -830,11 +810,9 @@ function reinitialiser_case_blanc(frame){
     else{
         if(Math.floor(Math.random() * 100) > 0){
             frame.src = "Image/berthelon_blanc.png"
-            console.log("monsieur berthelon !")
         }
         else{
             frame.src = "Image/prof_jaquot.png"
-            console.log("Prof jaquot !")
         }
     }
 }
@@ -846,17 +824,14 @@ function reinitialiser_case_bnoir(frame){
     else{
         if(Math.floor(Math.random() * 100) > 0){
             frame.src = "Image/berthelon_noir.png"
-            console.log("monsieur berthelon !")
         }
         else{
             frame.src = "Image/prof_jaquot.png"
-            console.log("Prof jaquot !")
         }
     }
 }
 
 function reinitialiser(){
-    // console.log("reinitialiser")
     for(let i = 0; i < 8; i++){
         for(let j = 0; j < 8; j++){
             let frame = document.getElementById(String(i) + String(j))
