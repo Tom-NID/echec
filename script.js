@@ -15,14 +15,14 @@
 var rect = document.getElementById("plateau").getBoundingClientRect()
 var largeur= Math.floor(screen.width / 20)
 var Grille = [
-["nt", "nc", "nd", "nd", "nr", "nf", "nc", "nt"],
-["np", "np", "np", "np", "np", "np", "np", "np"],
-[null, null, null, null, null, null, null, null],
-[null, null, null, null, null, null, null, null],
-[null, null, null, null, null, null, null, null],
-[null, null, null, null, null, null, null, null],
-["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
-["bt", "bc", "bf", "bd", "br", "bf", "bc", "bt"]]
+    ["nt", "nc", "nd", "nd", "nr", "nf", "nc", "nt"],
+    ["np", "np", "np", "np", "np", "np", "np", "np"],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
+    ["bt", "bc", "bf", "bd", "br", "bf", "bc", "bt"]]
 /*
 [
 ["nt", "nc", "nd", "nd", "nr", "nf", "nc", "nt"],
@@ -505,6 +505,7 @@ function test_case_accessible(pion, i1, i2){
 }
 // renvoie true si il n'y a aucun pion sur la case
 function case_deplacement(pion, i1, i2){
+    
     let frame = document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2)))
     if(frame.pion == null ||frame.pion == pion){
         return true
@@ -546,7 +547,7 @@ function case_rose(pion, i1, i2){
             frame.src = "Image/croix_rouge.png"
         }
         else{
-            frame.src = "Image/croix_blanc.png"
+            croix_blanc(frame)
         }
     }
     else{
@@ -554,7 +555,7 @@ function case_rose(pion, i1, i2){
             frame.src = "Image/croix_rouge.png"
         }
         else{
-            frame.src = "Image/croix_noir.png"
+            croix_noir(frame)
         }
     }
     
@@ -590,7 +591,7 @@ function croquer(pion){
 function verif_case_echec(pion, i1, i2){
     if(pion_echec.length > 0){
         let frame = document.getElementById(String(Number(pion.frame[0]) + i1) + String(Number(pion.frame[1]) + i2))
-        if((pion_echec.includes(frame.pion) && pion_echec.length == 1) || (frame_echec.includes(frame) && pion_echec.length == 1)){
+        if((pion_echec.includes(frame.pion) && pion_echec.length == 1) || (frame_echec_roi.includes(frame) && pion_echec.length == 1)){
             return true
         }
         return false
@@ -728,7 +729,7 @@ function echec(pion){
             }
         }
         if(verif_echec(pion, -i, -i, 'f') || verif_echec(pion, -i, -i, 'd')){break;}
-        if(! case_deplacement(pion, -i, -i)){break;}
+        // if(! case_deplacement(pion, -i, -i)){break;}
         i += 1
     }
     i = 1
@@ -738,7 +739,7 @@ function echec(pion){
             if(verif_echec(pion, -i, i, 'p') || verif_echec(pion, -i, i, 'r')){break;}
         }
         if(verif_echec(pion, -i, i, 'f') || verif_echec(pion, -i, i, 'd')){break;}
-        if(! case_deplacement(pion, -i, i)){break;}
+        // if(! case_deplacement(pion, -i, i)){break;}
         i += 1
     }
     i = 1
@@ -747,7 +748,7 @@ function echec(pion){
             if(verif_echec(pion, i, -i, 'p') || verif_echec(pion, i, -i, 'r')){break;}
         }
         if(verif_echec(pion, i, -i, 'f') || verif_echec(pion, i, -i, 'd')){break;}
-        if(! case_deplacement(pion, i, -i)){break;}
+        // if(! case_deplacement(pion, i, -i)){break;}
         i += 1
     }
     i = 1
@@ -757,7 +758,7 @@ function echec(pion){
             if(verif_echec(pion, i, i, 'p') || verif_echec(pion, i, i, 'r')){break;}
         }
         if(verif_echec(pion, i, i, 'f') || verif_echec(pion, i, i, 'd')){break;}
-        if(! case_deplacement(pion, i, i)){break;}
+        // if(! case_deplacement(pion, i, i)){break;}
         i += 1
     }
     i = 1
@@ -767,7 +768,7 @@ function echec(pion){
                 break;}
         }
         if(verif_echec(pion, -i, 0, 't') || verif_echec(pion, -i, 0, 'd')){break;}
-        if(! case_deplacement(pion, -i, 0)){break;}
+        // if(! case_deplacement(pion, -i, 0)){break;}
         i += 1
     }
 
@@ -780,7 +781,7 @@ function echec(pion){
         }
         if(verif_echec(pion, i, 0, 't') || verif_echec(pion, i, 0, 'd')){
             break;}
-        if(! case_deplacement(pion, i, 0)){break;}
+        // if(! case_deplacement(pion, i, 0)){break;}
         i += 1
     }
 
@@ -792,7 +793,7 @@ function echec(pion){
                 break;}
         }
         if(verif_echec(pion, 0, -i, 't') || verif_echec(pion, 0, -i, 'd')){break;}
-        if(! case_deplacement(pion, 0, -i)){break;}
+        // if(! case_deplacement(pion, 0, -i)){break;}
         i += 1
     }
     i = 1
@@ -803,7 +804,7 @@ function echec(pion){
             }
         }
         if(verif_echec(pion, 0, i, 't') || verif_echec(pion, 0, i, 'd')){break;}
-        if(! case_deplacement(pion, i, 0)){break;}
+        // if(! case_deplacement(pion, i, 0)){break;}
         i += 1
     }
     if(pion_echec.length > 0){
@@ -821,17 +822,6 @@ function son_echec(){
     son.src = "Sounds/echec" + String(Math.floor(Math.random() * 19)) + ".mp3"
     son.play()
 }
-// rends la case du roi et des pions qui le mettent en echec rouges
-function case_rouge(){
-    for (let i = 0; i < pion_echec.length; i++) {
-        document.getElementById(pion_echec[i].frame).echec = true
-        document.getElementById(pion_echec[i].frame).src = "Image/case_rouge.png"
-    }
-    for (let i = 0; i < frame_echec.length; i++) {
-        document.getElementById(frame_echec[i].id).echec = true
-        document.getElementById(frame_echec[i].id).src = "Image/case_rouge.png"
-    }
-}
 // reinitialise toutes les cases
 function reinitialiser(){
     for(let i = 0; i < 8; i++){
@@ -848,7 +838,7 @@ function reinitialiser(){
                     reinitialiser_case_noir(frame)
                 }   
                 if(frame.couleur == 3){
-                    frame.src = "Image/case_jaune.png"     
+                    case_jaune(frame)
                     frame.couleur = (i+j) % 2
                 }
             }
@@ -890,6 +880,68 @@ function reinitialiser_case_noir(frame){
     else{
         if(Math.floor(Math.random() * 100) > 0){
             frame.src = "Image/berthelon_noir.png"
+        }
+        else{
+            frame.src = "Image/prof_jaquot.png"
+        }
+    }
+}
+function case_jaune(frame){
+    if(Math.floor(Math.random() * 10000) > 0){
+        frame.src = "Image/case_jaune.png"
+    }
+    else{
+        if(Math.floor(Math.random() * 100) > 0){
+            frame.src = "Image/berthelon_jaune.png"
+        }
+        else{
+            frame.src = "Image/prof_jaquot.png"
+        }
+    }
+}
+// rends la case du roi et des pions qui le mettent en echec rouges
+function case_rouge(){
+    let source = ""
+    if(Math.floor(Math.random() * 10000) > 0){
+        source = "Image/case_rouge.png"
+    }
+    else{
+        if(Math.floor(Math.random() * 100) > 0){
+            source = "Image/berthelon_rouge.png"
+        }
+        else{
+            source = "Image/prof_jaquot.png"
+        }
+    }
+    for (let i = 0; i < pion_echec.length; i++) {
+        document.getElementById(pion_echec[i].frame).echec = true
+        document.getElementById(pion_echec[i].frame).src = source
+    }
+    for (let i = 0; i < frame_echec.length; i++) {
+        document.getElementById(frame_echec[i].id).echec = true
+        document.getElementById(frame_echec[i].id).src = "Image/case_rouge.png"
+    }
+}
+function croix_noir(frame){
+    if(Math.floor(Math.random() * 10000) > 0){
+        frame.src = "Image/croix_noir.png"
+    }
+    else{
+        if(Math.floor(Math.random() * 100) > 0){
+            frame.src = "Image/berthelon_croix_noir.png"
+        }
+        else{
+            frame.src = "Image/prof_jaquot.png"
+        }
+    }
+}
+function croix_blanc(frame){
+    if(Math.floor(Math.random() * 10000) > 0){
+        frame.src = "Image/croix_blanc.png"
+    }
+    else{
+        if(Math.floor(Math.random() * 100) > 0){
+            frame.src = "Image/berthelon_croix_blanc.png"
         }
         else{
             frame.src = "Image/prof_jaquot.png"
