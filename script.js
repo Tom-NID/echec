@@ -1,9 +1,9 @@
 // AJOUTER //
 /*
-    IMPORTANT :             
-- Pouvoir gagner
+    IMPORTANT :
+- victoire par echec et mat
 - Style global du site
-- rock
+- rock (petit et grand)
 - prise en passant
 
     OPTIONEL:
@@ -11,17 +11,11 @@
 - Deplacer les pions en "drag and drop"
 - mode de jeu pions aléatoires
 */
-for(let i = 0; i < 50; i++){
-    let SonMove = document.createElement("audio")
-    SonMove.src = "Sounds/move" + String(Math.floor(Math.random() * 4)) + ".mp3"
-    SonMove.play()
-}
+
 var rect = document.getElementById("plateau").getBoundingClientRect()
-
 var largeur= Math.floor(screen.width / 20)
-
 var Grille = [
-["nt", "nc", "nf", "nd", "nr", "nf", "nc", "nt"],
+["nt", "nc", "nd", "nd", "nr", "nf", "nc", "nt"],
 ["np", "np", "np", "np", "np", "np", "np", "np"],
 [null, null, null, null, null, null, null, null],
 [null, null, null, null, null, null, null, null],
@@ -29,20 +23,31 @@ var Grille = [
 [null, null, null, null, null, null, null, null],
 ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
 ["bt", "bc", "bf", "bd", "br", "bf", "bc", "bt"]]
-
+/*
+[
+["nt", "nc", "nd", "nd", "nr", "nf", "nc", "nt"],
+["np", "np", "np", "np", "np", "np", "np", "np"],
+[null, null, null, null, null, null, null, null],
+[null, null, null, null, null, null, null, null],
+[null, null, null, null, null, null, null, null],
+[null, null, null, null, null, null, null, null],
+["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
+["bt", "bc", "bf", "bd", "br", "bf", "bc", "bt"]]
+*/
 var pion_selection = null
 var pion_adverses = []
 var pion_echec = []
 var frame_echec = []
+var frame_echec_roi = []
 var tour = 0
 var QI_blanc = 100
 var QI_noir = 100
-
 var fond = document.createElement('audio')
 fond.src = "Sounds/fond" + String(Math.floor(Math.random() * 2)) + ".mp3"
 fond.volume = 1
 fond.loop = true
 
+// initialise le jeu
 function Initialisation(){
     document.getElementById("plateau").style.left = String(screen.width / 2 - largeur * 4) + "px"
     document.getElementById("plateau").style.width = String(largeur * 8) + "px"
@@ -201,90 +206,6 @@ function Initialisation(){
     document.body.appendChild(button)
     */
 }
-
-// Rends un case accessible par un pion
-function case_rose(pion, i1, i2){
-    let frame = document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2)))
-    if((Number(pion.frame[0]) + i1 + Number(pion.frame[1]) + i2) % 2 == 0){
-        if(frame.echec){
-            frame.src = "Image/croix_rouge.png"
-        }
-        else{
-            frame.src = "Image/croix_blanc.png"
-        }
-    }
-    else{
-        if(frame.echec){
-            frame.src = "Image/croix_rouge.png"
-        }
-        else{
-            frame.src = "Image/croix_noir.png"
-        }
-    }
-    
-    frame.couleur = 2
-}
-
-// Renvoie True si une case est vide
-function case_deplacement(pion, i1, i2){
-    if(document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))).pion == null){
-        return true
-    }
-    return false
-}
-
-// Renvoie True si il y a un pion adverse sur la case
-function pion_adverse(pion, i1, i2){
-    if(! case_deplacement(pion, i1, i2)){ // temp
-        if(document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))).pion.id[0] != pion.id[0]){
-            return true
-        }
-    }
-    return false
-}
-
-// Renvoie True si il y a un pion adverse sur la case et ajoute le pion a la liste pion_adverses
-function attaque(pion, i1, i2){
-    if(! case_deplacement(pion, i1, i2) && pion_adverse(pion, i1, i2)){
-        document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))).couleur = 2
-        pion_adverses.push(document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))).pion)
-        return true
-    }
-    return false
-}
-
-function croquer(pion){
-    if(pion.id[1] == "r"){
-        gagner(pion.id[0])
-    }
-    deplacement(document.getElementById(pion.frame))
-    pion.onclick = function(){return}
-    pion.style.position = "static"
-    pion.style.top = "0px"
-    pion.style.left = "0px"
-    if(pion.id[0] == "n"){
-        document.getElementById("pions_noirs_morts").appendChild(pion);
-    }
-    else{
-        document.getElementById("pions_blancs_morts").appendChild(pion);
-    }
-}
-
-function test_sur_plateau(pion, i1, i2){
-    return Number(pion.frame[0]) + i1 >= 0 && Number(pion.frame[0]) + i1 <= 7 && Number(pion.frame[1]) + i2 >= 0 && Number(pion.frame[1]) + i2 <= 7
-}
-
-function test_case_accessible(pion, i1, i2){
-    return case_deplacement(pion, i1, i2) || pion_adverse(pion, i1, i2)
-}
-
-function test_case_accessible_roi(pion, i1, i2){
-    if(frame_echec.includes(document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))))){
-        return false
-    }
-    return true
-}
-
 function Cava(pion){
     if(pion_adverses.includes(pion)){
         croquer(pion)
@@ -321,7 +242,6 @@ function Cava(pion){
         pion_adverses[i].src = "Image/mort.png"
     }
 }
-
 function Dame(pion){
     if(pion_adverses.includes(pion)){
         croquer(pion)
@@ -399,7 +319,6 @@ function Dame(pion){
         pion_adverses[i].src = "Image/mort.png"
     }
 }
-
 function Fou(pion){
     if(pion_adverses.includes(pion)){
         croquer(pion)
@@ -444,7 +363,6 @@ function Fou(pion){
         pion_adverses[i].src = "Image/mort.png"
     }
 }
-
 function Pion(pion){
     if(pion_adverses.includes(pion)){
         croquer(pion)
@@ -491,7 +409,6 @@ function Pion(pion){
         pion_adverses[i].src = "Image/mort.png"
     }
 }
-
 function Roi(pion){
     if(pion_adverses.includes(pion)){
         croquer(pion)
@@ -529,7 +446,6 @@ function Roi(pion){
         pion_adverses[i].src = "Image/mort.png"
     }
 }
-
 function Tour(pion){
     if(pion_adverses.includes(pion)){
         croquer(pion)
@@ -579,38 +495,210 @@ function Tour(pion){
         pion_adverses[i].src = "Image/mort.png"
     }
 }
-
-function verif_echec(pion, i1, i2, type){
-    let frame = document.getElementById(String(Number(pion.frame[0]) + i1) + (String(Number(pion.frame[1]) + i2)))
-    
-    if(frame.pion != null && frame.pion.id[0] != pion.id[0] && frame.pion.id[1] == type){
-        pion_echec.push(frame.pion)
-        if(i1 == 0){
-            case_interdite(pion.frame[0], String(Number(pion.frame[1]) + i2 / Math.abs(i2))) 
-        }
-        if(i2 == 0){
-            case_interdite(String(Number(pion.frame[0]) + i1 / Math.abs(i1)), pion.frame[1])
-        }
-        if(i1 != 0 && i2 != 0){
-            case_interdite(String(Number(pion.frame[0]) + i1 / Math.abs(i1)), String(Number(pion.frame[1]) + i2 / Math.abs(i2)))
-        }
+// renvoie true si une la case est sur le plateau
+function test_sur_plateau(pion, i1, i2){
+    return Number(pion.frame[0]) + i1 >= 0 && Number(pion.frame[0]) + i1 <= 7 && Number(pion.frame[1]) + i2 >= 0 && Number(pion.frame[1]) + i2 <= 7
+}
+// renvoie true si la case est accessible par le pion (combinaison de case_deplacement() et pion_adverse())
+function test_case_accessible(pion, i1, i2){
+    return case_deplacement(pion, i1, i2) || pion_adverse(pion, i1, i2)
+}
+// renvoie true si il n'y a aucun pion sur la case
+function case_deplacement(pion, i1, i2){
+    let frame = document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2)))
+    if(frame.pion == null ||frame.pion == pion){
         return true
     }
     return false
 }
-
-function case_interdite(i1, i2){
-    let frame = document.getElementById(i1 + i2)
-    frame.src = "Image/case_rouge.png"
-    frame.echec = true
-    document.getElementById(pion_echec[pion_echec.length - 1].frame).src = "Image/case_rouge.png"
-    document.getElementById(pion_echec[pion_echec.length - 1].frame).echec = true
+// renvoie true si il y a un pion adverse sur la case
+function pion_adverse(pion, i1, i2){
+    if(! case_deplacement(pion, i1, i2)){ // temp
+        if(document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))).pion.id[0] != pion.id[0]){
+            return true
+        }
+    }
+    return false
 }
+// renvoie true si la case est accessible par le roi
+function test_case_accessible_roi(pion, i1, i2){
+    let frame = document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2)))
+    if(frame_echec_roi.includes(frame)){
+        return false
+    }
+    return true
+}
+// renvoie true si il y a un pion qui met en echec le roi sur la case
+function verif_echec(pion, i1, i2, type){
+    let frame = document.getElementById(String(Number(pion.frame[0]) + i1) + (String(Number(pion.frame[1]) + i2)))
+    if(frame.pion != null && frame.pion.id[0] != pion.id[0] && frame.pion.id[1] == type){
+        pion_echec.push(frame.pion)
+        frame_echec.push(document.getElementById(pion.frame))
+        return true
+    }
+    return false
+}
+// rends la case accessible par le pion selectionné
+function case_rose(pion, i1, i2){
+    let frame = document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2)))
+    if((Number(pion.frame[0]) + i1 + Number(pion.frame[1]) + i2) % 2 == 0){
+        if(frame.echec){
+            frame.src = "Image/croix_rouge.png"
+        }
+        else{
+            frame.src = "Image/croix_blanc.png"
+        }
+    }
+    else{
+        if(frame.echec){
+            frame.src = "Image/croix_rouge.png"
+        }
+        else{
+            frame.src = "Image/croix_noir.png"
+        }
+    }
+    
+    frame.couleur = 2
+}
+// renvoie true si le pion peut etre pris
+function attaque(pion, i1, i2){
+    if(! case_deplacement(pion, i1, i2) && pion_adverse(pion, i1, i2)){
+        document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))).couleur = 2
+        pion_adverses.push(document.getElementById(String(Number(pion.frame[0]) + i1 + String(Number(pion.frame[1]) + i2))).pion)
+        return true
+    }
+    return false
+}
+// place le pion dans la div pions_morts quand il est pris
+function croquer(pion){
+    if(pion.id[1] == "r"){
+        gagner(pion.id[0])
+    }
+    deplacement(document.getElementById(pion.frame))
+    pion.onclick = function(){return}
+    pion.style.position = "static"
+    pion.style.top = "0px"
+    pion.style.left = "0px"
+    if(pion.id[0] == "n"){
+        document.getElementById("pions_noirs_morts").appendChild(pion);
+    }
+    else{
+        document.getElementById("pions_blancs_morts").appendChild(pion);
+    }
+}
+// renvoie true si la case ne met pas en echec le roi, ou si le pion peut sauver le roi en s'y deplacant
+function verif_case_echec(pion, i1, i2){
+    if(pion_echec.length > 0){
+        let frame = document.getElementById(String(Number(pion.frame[0]) + i1) + String(Number(pion.frame[1]) + i2))
+        if((pion_echec.includes(frame.pion) && pion_echec.length == 1) || (frame_echec.includes(frame) && pion_echec.length == 1)){
+            return true
+        }
+        return false
+    }
+    return true
+}
+// deplace le pion et lance plusieurs fonctions à chaques deplacements
+function deplacement(frame){
+    if(frame.couleur == 2){
+        if(pion_selection.id[1] == 'p' && ! pion_selection.move){pion_selection.move = true}
+        pion_selection.style.top = String(Number(frame.id[0]) * largeur) + "px"
+        pion_selection.style.left = String(Number(frame.id[1]) * largeur) + "px"
+        sonDeplacement(frame)
+        dernierDeplacement(frame)
+        document.getElementById(pion_selection.frame).pion = null
+        frame.pion = pion_selection
+        pion_selection.frame = frame.id
+        if((pion_selection.frame[0] == "0" && pion_selection.id == "bp") || (pion_selection.frame[0] == "7" && pion_selection.id == "np")){changement_pion(pion_selection)}
+        
+        QI()
+        tour += 1
 
+        reinitialiser_case_echec()
+        a()
+    }
+    reinitialiser()
+}
+// lance un son aléatoire de deplacement ou de mort
+function sonDeplacement(frame){
+    let SonMove = document.createElement("audio")
+    if(frame.pion != null){
+        SonMove.src = "Sounds/mort" + String(Math.floor(Math.random() * 11)) + ".mp3"
+    }
+    else{
+        SonMove.src = "Sounds/move" + String(Math.floor(Math.random() * 7)) + ".mp3"
+    }
+    SonMove.play()
+}
+// rends les cases du dernier deplacement jaunes
+function dernierDeplacement(frame){
+    document.getElementById(pion_selection.frame).couleur = 3
+    frame.couleur = 3 
+}
+// change le QI
+function QI(){
+    if(tour % 2 == 0){
+        QI_blanc += Math.floor(Math.random() * (200) - 100)
+        document.getElementById("QI_blanc").innerHTML = "QI : " + String(QI_blanc)
+    }
+    else{
+        QI_noir += Math.floor(Math.random() * (200) - 100)
+        document.getElementById("QI_noir").innerHTML = "QI : " + String(QI_noir)
+    }
+}
+// reinitialise les cases echec
+function reinitialiser_case_echec(){
+    for(let i = 0; i < 8; i++){
+        for(let j = 0; j < 8; j++){
+            if(document.getElementById(String(i) + String(j)).echec){
+                document.getElementById(String(i) + String(j)).echec = false
+            }
+        }
+    }
+}
+function a(){
+    frame_echec = []
+    frame_echec_roi = []
+    if(tour % 2 == 0){
+        echec_et_mat(document.getElementById("br"))
+        pion_echec = []
+        for(let i = 0; i < frame_echec.length; i++){
+            frame_echec_roi.push(frame_echec[i])
+        }
+        frame_echec = []
+        if(echec(document.getElementById("br"))){
+            son_echec()
+        }
+    }
+    else{
+        echec_et_mat(document.getElementById("nr"))
+        pion_echec = []
+        for(let i = 0; i < frame_echec.length; i++){
+            frame_echec_roi.push(frame_echec[i])
+        }
+        frame_echec = []
+        if(echec(document.getElementById("nr"))){
+            son_echec()
+        }
+    }
+    case_rouge()
+}
+// regarde où le roi peut se deplacer sans etre mit en echec
+function echec_et_mat(pion){
+    let frame = pion.frame
+    let positions = [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]
+    for(let i = 0; i < positions.length; i++){
+        if(test_sur_plateau(pion, positions[i][0], positions[i][1]) && test_case_accessible(pion, positions[i][0], positions[i][1])){
+            pion.frame = String(Number(pion.frame[0]) + positions[i][0]) + String(Number(pion.frame[1]) + positions[i][1])
+            echec(pion)
+            pion.frame = frame
+        }
+    }
+}
+// regarde quels pions mettent en echec le roi
 function echec(pion){
-    pion_echec = []
+    
     if(test_sur_plateau(pion, -2, -1) && pion_adverse(pion, -2, -1)){
-        verif_echec(pion, -2, -1, 'c')
+        (pion, -2, -1, 'c')
     }
     if(test_sur_plateau(pion, -2, 1) && pion_adverse(pion, -2, 1)){
         verif_echec(pion, -2, 1, 'c')
@@ -720,7 +808,6 @@ function echec(pion){
     }
     if(pion_echec.length > 0){
         pion.echec = true
-        son_echec()
         return true
     }
     else{
@@ -728,70 +815,88 @@ function echec(pion){
         return false
     }
 }
-
-function echec_et_mat(pion){
-    let frame = pion.frame
-    let positions = [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]
-    for(let i = 0; i < positions.length; i++){
-        if(test_sur_plateau(pion, positions[i][0], positions[i][1]) && test_case_accessible(pion, positions[i][0], positions[i][1])){
-            pion.frame = String(Number(pion.frame[0]) + positions[i][0]) + String(Number(pion.frame[1]) + positions[i][1])
-            if(echec(pion)){
-                frame_echec.push(document.getElementById(pion.frame))
+// lance un son aléatoire si le roi est mis en echec
+function son_echec(){
+    let son = document.createElement("audio")
+    son.src = "Sounds/echec" + String(Math.floor(Math.random() * 19)) + ".mp3"
+    son.play()
+}
+// rends la case du roi et des pions qui le mettent en echec rouges
+function case_rouge(){
+    for (let i = 0; i < pion_echec.length; i++) {
+        document.getElementById(pion_echec[i].frame).echec = true
+        document.getElementById(pion_echec[i].frame).src = "Image/case_rouge.png"
+    }
+    for (let i = 0; i < frame_echec.length; i++) {
+        document.getElementById(frame_echec[i].id).echec = true
+        document.getElementById(frame_echec[i].id).src = "Image/case_rouge.png"
+    }
+}
+// reinitialise toutes les cases
+function reinitialiser(){
+    for(let i = 0; i < 8; i++){
+        for(let j = 0; j < 8; j++){
+            let frame = document.getElementById(String(i) + String(j))
+            if(! frame.echec){
+                if(frame.couleur == 2){
+                    frame.couleur = (i+j) % 2
+                }
+                if(frame.couleur == 0){
+                    reinitialiser_case_blanc(frame)
+                }
+                if(frame.couleur == 1){
+                    reinitialiser_case_noir(frame)
+                }   
+                if(frame.couleur == 3){
+                    frame.src = "Image/case_jaune.png"     
+                    frame.couleur = (i+j) % 2
+                }
             }
-            pion.frame = frame
+            else{
+                if(frame.couleur == 2){
+                    frame.couleur = (i+j) % 2
+                }
+                if(frame.couleur == 0 || frame.couleur == 1){
+                    frame.src = "Image/case_rouge.png"
+                }
+            }
         }
     }
-    
-}
-
-function verif_case_echec(pion, i1, i2){
-    if(pion_echec.length > 0){
-        let frame = document.getElementById(String(Number(pion.frame[0]) + i1) + String(Number(pion.frame[1]) + i2))
-        if(frame.echec == true){return true}
-        for(let i = 0; i < pion_echec.length; i++){
-            if(pion_echec[i].frame == frame.id){
-                return true
-            }
-        }
-        return false
+    for(let i = 0; i < pion_adverses.length; i ++){
+        if(pion_adverses[i].id[0] == 'n'){pion_adverses[i].src = "Image/Noir/" + String(pion_adverses[i].id) + ".png"}   
+        else{pion_adverses[i].src = "Image/Blanc/" + String(pion_adverses[i].id) + ".png"}
     }
-    return true
+    pion_adverses = []
 }
-
-function deplacement(frame){
-    if(frame.couleur == 2){
-        if(pion_selection.id[1] == 'p' && ! pion_selection.move){pion_selection.move = true}
-        pion_selection.style.top = String(Number(frame.id[0]) * largeur) + "px"
-        pion_selection.style.left = String(Number(frame.id[1]) * largeur) + "px"
-        sonDeplacement(frame)
-        dernierDeplacement(frame)
-        document.getElementById(pion_selection.frame).pion = null
-        frame.pion = pion_selection
-        pion_selection.frame = frame.id
-        if((pion_selection.frame[0] == "0" && pion_selection.id == "bp") || (pion_selection.frame[0] == "7" && pion_selection.id == "np")){changement_pion(pion_selection)}
-        
-        QI()
-        tour += 1
-
-        reinitialiser_case_echec()
-        frame_echec = []
-        if(tour % 2 == 0){
-            echec_et_mat(document.getElementById("br"))
-            reinitialiser_case_rouge()
-            echec(document.getElementById("br"))
-            
-            
+// reinitialise une case blanche
+function reinitialiser_case_blanc(frame){
+    if(Math.floor(Math.random() * 10000) > 0){
+        frame.src = "Image/case_blanc.png"
+    }
+    else{
+        if(Math.floor(Math.random() * 100) > 0){
+            frame.src = "Image/berthelon_blanc.png"
         }
         else{
-            echec_et_mat(document.getElementById("nr"))
-            reinitialiser_case_echec()
-            echec(document.getElementById("nr"))
-            
+            frame.src = "Image/prof_jaquot.png"
         }
     }
-    reinitialiser()
 }
-
+// reinitialise une case noire
+function reinitialiser_case_noir(frame){
+    if(Math.floor(Math.random() * 10000) > 0){
+        frame.src = "Image/case_noir.png"
+    }
+    else{
+        if(Math.floor(Math.random() * 100) > 0){
+            frame.src = "Image/berthelon_noir.png"
+        }
+        else{
+            frame.src = "Image/prof_jaquot.png"
+        }
+    }
+}
+// permet de changer le pion quand il atteint le bout du plateau
 function changement_pion(pion){
     let pions = ["d", "t", "c", "f"]
     document.getElementById("canvas").style.zIndex = "2"
@@ -830,133 +935,9 @@ function changement_pion(pion){
             document.getElementById("pions_changement").style.zIndex = "-1"
         }
     }
+    a()
 }
-
-function reinitialiser_case_echec(){
-    for(let i = 0; i < 8; i++){
-        for(let j = 0; j < 8; j++){
-            if(document.getElementById(String(i) + String(j)).echec){
-                document.getElementById(String(i) + String(j)).echec = false
-            }
-        }
-    }
-}
-
-function reinitialiser_case_blanc(frame){
-    if(Math.floor(Math.random() * 10000) > 0){
-        frame.src = "Image/case_blanc.png"
-    }
-    else{
-        if(Math.floor(Math.random() * 100) > 0){
-            frame.src = "Image/berthelon_blanc.png"
-        }
-        else{
-            frame.src = "Image/prof_jaquot.png"
-        }
-    }
-}
-
-function reinitialiser_case_noir(frame){
-    if(Math.floor(Math.random() * 10000) > 0){
-        frame.src = "Image/case_noir.png"
-    }
-    else{
-        if(Math.floor(Math.random() * 100) > 0){
-            frame.src = "Image/berthelon_noir.png"
-        }
-        else{
-            frame.src = "Image/prof_jaquot.png"
-        }
-    }
-}
-
-function reinitialiser_case_rouge(){
-    for(let i = 0; i < 8; i++){
-        for(let j = 0; j < 8; j++){
-            if(document.getElementById(String(i) + String(j)).echec){
-                if((i + j) % 2 == 0){
-                    reinitialiser_case_blanc(document.getElementById(String(i) + String(j)))
-                }
-                else{
-                    reinitialiser_case_noir(document.getElementById(String(i) + String(j)))
-                }
-            }
-        }
-    }
-}
-
-function reinitialiser(){
-    for(let i = 0; i < 8; i++){
-        for(let j = 0; j < 8; j++){
-            let frame = document.getElementById(String(i) + String(j))
-            if(! frame.echec){
-                if(frame.couleur == 2){
-                    frame.couleur = (i+j) % 2
-                }
-                if(frame.couleur == 0){
-                    reinitialiser_case_blanc(frame)
-                }
-                if(frame.couleur == 1){
-                    reinitialiser_case_noir(frame)
-                }   
-                if(frame.couleur == 3){
-                    frame.src = "Image/case_jaune.png"     
-                    frame.couleur = (i+j) % 2
-                }
-            }
-            else{
-                if(frame.couleur == 2){
-                    frame.couleur = (i+j) % 2
-                }
-                if(frame.couleur == 0 || frame.couleur == 1){
-                    frame.src = "Image/case_rouge.png"
-                }
-            }
-        }
-    }
-    for(let i = 0; i < pion_adverses.length; i ++){
-        if(pion_adverses[i].id[0] == 'n'){pion_adverses[i].src = "Image/Noir/" + String(pion_adverses[i].id) + ".png"}   
-        else{pion_adverses[i].src = "Image/Blanc/" + String(pion_adverses[i].id) + ".png"}
-    }
-    pion_adverses = []
-}
-
-function sonDeplacement(frame){
-    for(let i = 0; i < 250; i++){
-        let SonMove = document.createElement("audio")
-        if(frame.pion != null){
-            SonMove.src = "Sounds/mort" + String(Math.floor(Math.random() * 11)) + ".mp3"
-        }
-        else{
-            SonMove.src = "Sounds/move" + String(Math.floor(Math.random() * 7)) + ".mp3"
-        }
-        SonMove.play()
-    }
-}
-
-function son_echec(){
-    let son = document.createElement("audio")
-    son.src = "Sounds/echec" + String(Math.floor(Math.random() * 19)) + ".mp3"
-    son.play()
-}
-
-function QI(){
-    if(tour % 2 == 0){
-        QI_blanc += Math.floor(Math.random() * (200) - 100)
-        document.getElementById("QI_blanc").innerHTML = "QI : " + String(QI_blanc)
-    }
-    else{
-        QI_noir += Math.floor(Math.random() * (200) - 100)
-        document.getElementById("QI_noir").innerHTML = "QI : " + String(QI_noir)
-    }
-}
-
-function dernierDeplacement(frame){
-    document.getElementById(pion_selection.frame).couleur = 3
-    frame.couleur = 3
-    
-}
-
+// affiche la vainqueur
 function gagner(couleur){
     let canvas = document.getElementById("canvas")
     canvas.style.zIndex = "2"
@@ -975,7 +956,7 @@ function gagner(couleur){
         text.innerHTML = "VICTOIRE DES BLANCS !"
     }
 }
-
+// reinitialise tout le jeu
 function rejouer(){
     document.getElementById("QI_blanc").innerHTML = "QI : "
     document.getElementById("QI_noir").innerHTML = "QI : "
