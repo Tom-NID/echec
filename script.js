@@ -640,6 +640,7 @@ function echec(pion){
             }
         }
         if(verif_echec(pion, -i, -i, 'f') || verif_echec(pion, -i, -i, 'd')){break;}
+        if(! case_deplacement(pion, -i, -i)){break;}
         i += 1
     }
     i = 1
@@ -649,6 +650,7 @@ function echec(pion){
             if(verif_echec(pion, -i, i, 'p') || verif_echec(pion, -i, i, 'r')){break;}
         }
         if(verif_echec(pion, -i, i, 'f') || verif_echec(pion, -i, i, 'd')){break;}
+        if(! case_deplacement(pion, -i, i)){break;}
         i += 1
     }
     i = 1
@@ -657,40 +659,44 @@ function echec(pion){
             if(verif_echec(pion, i, -i, 'p') || verif_echec(pion, i, -i, 'r')){break;}
         }
         if(verif_echec(pion, i, -i, 'f') || verif_echec(pion, i, -i, 'd')){break;}
+        if(! case_deplacement(pion, i, -i)){break;}
         i += 1
     }
     i = 1
-
-
     while(test_sur_plateau(pion, i, i) && test_case_accessible(pion, i, i)){
         
         if(i == 1){
             if(verif_echec(pion, i, i, 'p') || verif_echec(pion, i, i, 'r')){break;}
         }
-        if(verif_echec(pion, i, i, 'f') || verif_echec(pion, i, i, 'd')){
-            break;}
+        if(verif_echec(pion, i, i, 'f') || verif_echec(pion, i, i, 'd')){break;}
+        if(! case_deplacement(pion, i, i)){break;}
         i += 1
     }
     i = 1
-
-
     while(test_sur_plateau(pion, -i, 0) && test_case_accessible(pion, -i, 0)){
         if(i == 1){
             if(verif_echec(pion, -i, 0, 'r')){
                 break;}
         }
         if(verif_echec(pion, -i, 0, 't') || verif_echec(pion, -i, 0, 'd')){break;}
+        if(! case_deplacement(pion, -i, 0)){break;}
         i += 1
     }
+
+
     i = 1
     while(test_sur_plateau(pion, i, 0) && test_case_accessible(pion, i, 0)){
         if(i == 1){
             if(verif_echec(pion, i, 0, 'r')){
                 break;}
         }
-        if(verif_echec(pion, i, 0, 't') || verif_echec(pion, i, 0, 'd')){break;}
+        if(verif_echec(pion, i, 0, 't') || verif_echec(pion, i, 0, 'd')){
+            break;}
+        if(! case_deplacement(pion, i, 0)){break;}
         i += 1
     }
+
+
     i = 1
     while(test_sur_plateau(pion, 0, -i) && test_case_accessible(pion, 0, -i)){
         if(i == 1){
@@ -698,6 +704,7 @@ function echec(pion){
                 break;}
         }
         if(verif_echec(pion, 0, -i, 't') || verif_echec(pion, 0, -i, 'd')){break;}
+        if(! case_deplacement(pion, 0, -i)){break;}
         i += 1
     }
     i = 1
@@ -708,6 +715,7 @@ function echec(pion){
             }
         }
         if(verif_echec(pion, 0, i, 't') || verif_echec(pion, 0, i, 'd')){break;}
+        if(! case_deplacement(pion, i, 0)){break;}
         i += 1
     }
     if(pion_echec.length > 0){
@@ -723,7 +731,6 @@ function echec(pion){
 
 function echec_et_mat(pion){
     let frame = pion.frame
-    console.log(frame)
     let positions = [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]
     for(let i = 0; i < positions.length; i++){
         if(test_sur_plateau(pion, positions[i][0], positions[i][1]) && test_case_accessible(pion, positions[i][0], positions[i][1])){
@@ -767,8 +774,8 @@ function deplacement(frame){
         tour += 1
 
         reinitialiser_case_echec()
+        frame_echec = []
         if(tour % 2 == 0){
-            frame_echec = []
             echec_et_mat(document.getElementById("br"))
             reinitialiser_case_rouge()
             echec(document.getElementById("br"))
@@ -776,9 +783,8 @@ function deplacement(frame){
             
         }
         else{
-            frame_echec = []
             echec_et_mat(document.getElementById("nr"))
-            reinitialiser_case_rouge()
+            reinitialiser_case_echec()
             echec(document.getElementById("nr"))
             
         }
