@@ -15,7 +15,7 @@
 var rect = document.getElementById("plateau").getBoundingClientRect()
 var largeur= Math.floor(screen.width / 20)
 var Grille = [
-    ["nt", "nc", "nd", "nd", "nr", "nf", "nc", "nt"],
+    ["nt", "nc", "nf", "nd", "nr", "nf", "nc", "nt"],
     ["np", "np", "np", "np", "np", "np", "np", "np"],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
@@ -25,7 +25,7 @@ var Grille = [
     ["bt", "bc", "bf", "bd", "br", "bf", "bc", "bt"]]
 /*
 [
-["nt", "nc", "nd", "nd", "nr", "nf", "nc", "nt"],
+["nt", "nc", "nf", "nd", "nr", "nf", "nc", "nt"],
 ["np", "np", "np", "np", "np", "np", "np", "np"],
 [null, null, null, null, null, null, null, null],
 [null, null, null, null, null, null, null, null],
@@ -207,6 +207,7 @@ function Initialisation(){
     */
 }
 function Cava(pion){
+    let frame = document.getElementById(pion.frame)
     if(pion_adverses.includes(pion)){
         croquer(pion)
         return
@@ -215,34 +216,35 @@ function Cava(pion){
     reinitialiser()
     pion_selection = pion
     if(test_sur_plateau(pion, -2, -1) && test_case_accessible(pion, -2, -1) && verif_case_echec(pion, -2, -1)){
-        if(! attaque(pion, -2, -1)){case_rose(pion, -2, -1)}
+        if(! attaque(pion, -2, -1) && !frame_echec_roi.includes(frame)){case_rose(pion, -2, -1)}
     }
     if(test_sur_plateau(pion, -2, 1) && test_case_accessible(pion, -2, 1) && verif_case_echec(pion, -2, 1)){
-        if(! attaque(pion, -2, 1)){case_rose(pion, -2, 1)}              
+        if(! attaque(pion, -2, 1) && !frame_echec_roi.includes(frame)){case_rose(pion, -2, 1)}              
     }
     if(test_sur_plateau(pion, 2, -1) && test_case_accessible(pion, 2, -1) && verif_case_echec(pion, 2, -1)){
-        if(! attaque(pion, 2, -1)){case_rose(pion, 2, -1)}                
+        if(! attaque(pion, 2, -1) && !frame_echec_roi.includes(frame)){case_rose(pion, 2, -1)}                
     }
     if(test_sur_plateau(pion, 2, 1) && test_case_accessible(pion, 2, 1) && verif_case_echec(pion, 2, 1)){
-        if(! attaque(pion, 2, 1)){case_rose(pion, 2, 1)}               
+        if(! attaque(pion, 2, 1) && !frame_echec_roi.includes(frame)){case_rose(pion, 2, 1)}               
     }
     if(test_sur_plateau(pion, -1, -2) && test_case_accessible(pion, -1, -2) && verif_case_echec(pion, -1, -2)){
-        if(! attaque(pion, -1, -2)){case_rose(pion, -1, -2)}               
+        if(! attaque(pion, -1, -2) && !frame_echec_roi.includes(frame)){case_rose(pion, -1, -2)}               
     }
     if(test_sur_plateau(pion, 1, -2) && test_case_accessible(pion, 1, -2) && verif_case_echec(pion, 1, -2)){
-        if(! attaque(pion, 1, -2)){case_rose(pion, 1, -2)}                
+        if(! attaque(pion, 1, -2) && !frame_echec_roi.includes(frame)){case_rose(pion, 1, -2)}                
     }
     if(test_sur_plateau(pion, -1, 2) && test_case_accessible(pion, -1, 2) && verif_case_echec(pion, -1, 2)){
-        if(! attaque(pion, -1, 2)){case_rose(pion, -1, 2)}               
+        if(! attaque(pion, -1, 2) && !frame_echec_roi.includes(frame)){case_rose(pion, -1, 2)}               
     }
     if(test_sur_plateau(pion, 1, 2) && test_case_accessible(pion, 1, 2) && verif_case_echec(pion, 1, 2)){
-        if(! attaque(pion, 1, 2)){case_rose(pion, 1, 2)}
+        if(! attaque(pion, 1, 2) && !frame_echec_roi.includes(frame)){case_rose(pion, 1, 2)}
     }
     for(let i = 0; i < pion_adverses.length; i ++){
         pion_adverses[i].src = "Image/mort.png"
     }
 }
 function Dame(pion){
+    let frame = document.getElementById(pion.frame)
     if(pion_adverses.includes(pion)){
         croquer(pion)
         return
@@ -254,7 +256,7 @@ function Dame(pion){
     while(test_sur_plateau(pion, -i, -i) && test_case_accessible(pion, -i, -i)){
         if(verif_case_echec(pion, -i, -i)){
             if(attaque(pion, -i, -i)){break;}
-            case_rose(pion, -i, -i)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, -i, -i)}
         }
         i += 1
     }
@@ -262,7 +264,7 @@ function Dame(pion){
     while(test_sur_plateau(pion, -i, i) && test_case_accessible(pion, -i, i)){
         if(verif_case_echec(pion, -i, i)){
             if(attaque(pion, -i, i)){break;}
-            case_rose(pion, -i, i)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, -i, i)}
         }
         i += 1
     }
@@ -270,7 +272,7 @@ function Dame(pion){
     while(test_sur_plateau(pion, i, -i) && test_case_accessible(pion, i, -i)){
         if(verif_case_echec(pion, i, -i)){
             if(attaque(pion, i, -i)){break;}
-            case_rose(pion, i, -i)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, i, -i)}
         }
         i += 1
     }
@@ -278,7 +280,7 @@ function Dame(pion){
     while(test_sur_plateau(pion, i, i) && test_case_accessible(pion, i, i)){
         if(verif_case_echec(pion, i, i)){
             if(attaque(pion, i, i)){break;}
-            case_rose(pion, i, i)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, i, i)}
         }
         i += 1
     }
@@ -286,7 +288,7 @@ function Dame(pion){
     while(test_sur_plateau(pion, -i, 0) && test_case_accessible(pion, -i, 0)){
         if(verif_case_echec(pion, -i, 0)){
             if(attaque(pion, -i, 0)){break;}
-            case_rose(pion, -i, 0)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, -i, 0)}
         }
         i += 1
     }
@@ -294,7 +296,7 @@ function Dame(pion){
     while(test_sur_plateau(pion, i, 0) && test_case_accessible(pion, i, 0)){
         if(verif_case_echec(pion, i, 0)){
             if(attaque(pion, i, 0)){break;}
-            case_rose(pion, i, 0)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, i, 0)}
         }
         i += 1
         
@@ -303,7 +305,7 @@ function Dame(pion){
     while(test_sur_plateau(pion, 0, -i) && test_case_accessible(pion, 0, -i)){
         if(verif_case_echec(pion, 0, -i)){
             if(attaque(pion, 0, -i)){break;}
-            case_rose(pion, 0, -i)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, 0, -i)}
         }
         i += 1
     }
@@ -311,7 +313,7 @@ function Dame(pion){
     while(test_sur_plateau(pion, 0, i) && test_case_accessible(pion, 0, i)){
         if(verif_case_echec(pion, 0, i)){
             if(attaque(pion, 0, i)){break;}
-            case_rose(pion, 0, i)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, 0, i)}
         }
         i += 1
     }
@@ -320,6 +322,7 @@ function Dame(pion){
     }
 }
 function Fou(pion){
+    let frame = document.getElementById(pion.frame)
     if(pion_adverses.includes(pion)){
         croquer(pion)
         return
@@ -331,7 +334,7 @@ function Fou(pion){
     while(test_sur_plateau(pion, -i, -i) && test_case_accessible(pion, -i, -i)){
         if(verif_case_echec(pion, -i, -i)){
             if(attaque(pion, -i, -i)){break;}
-            case_rose(pion, -i, -i)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, -i, -i)}
         }
         i += 1
     }
@@ -339,7 +342,7 @@ function Fou(pion){
     while(test_sur_plateau(pion, -i, i) && test_case_accessible(pion, -i, i)){
         if(verif_case_echec(pion, -i, i)){
             if(attaque(pion, -i, i)){break;}
-            case_rose(pion, -i, i)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, -i, i)}
         }
         i += 1
     }
@@ -347,7 +350,7 @@ function Fou(pion){
     while(test_sur_plateau(pion, i, -i) && test_case_accessible(pion, i, -i)){
         if(verif_case_echec(pion, i, -i)){
             if(attaque(pion, i, -i)){break;}
-            case_rose(pion, i, -i)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, i, -i)}
         }
         i += 1
     }
@@ -355,7 +358,7 @@ function Fou(pion){
     while(test_sur_plateau(pion, i, i) && test_case_accessible(pion, i, i)){
         if(verif_case_echec(pion, i, i)){
             if(attaque(pion, i, i)){break;}
-            case_rose(pion, i, i)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, i, i)}
         }
         i += 1
     }
@@ -364,6 +367,7 @@ function Fou(pion){
     }
 }
 function Pion(pion){
+    let frame = document.getElementById(pion.frame)
     if(pion_adverses.includes(pion)){
         croquer(pion)
         return
@@ -373,7 +377,7 @@ function Pion(pion){
     pion_selection = pion
     switch(pion.id){
         case "bp":
-            if(Number(pion.frame[0]) - 1 >= 0 && case_deplacement(pion, -1, 0) && verif_case_echec(pion, -1, 0)){
+            if(Number(pion.frame[0]) - 1 >= 0 && case_deplacement(pion, -1, 0) && verif_case_echec(pion, -1, 0) && !frame_echec_roi.includes(frame)){
                 case_rose(pion, -1, 0)
             }
             if(Number(pion.frame[0]) - 1 >= 0 && Number(pion.frame[1]) - 1 >= 0 && verif_case_echec(pion, -1, -1)){
@@ -383,13 +387,13 @@ function Pion(pion){
                 attaque(pion, -1, 1)
             }
             if(! pion.move){
-                if(Number(pion.frame[0]) - 2 >= 0 && case_deplacement(pion, -2, 0) && case_deplacement(pion, -1, 0) && verif_case_echec(pion, -2, 0)){
+                if(Number(pion.frame[0]) - 2 >= 0 && case_deplacement(pion, -2, 0) && case_deplacement(pion, -1, 0) && verif_case_echec(pion, -2, 0) && !frame_echec_roi.includes(frame)){
                     case_rose(pion, -2, 0)
                 }
             }
             break;
         case "np":
-            if(Number(pion.frame[0]) + 1 <= 7 && case_deplacement(pion, 1, 0) && verif_case_echec(pion, 1, 0)){
+            if(Number(pion.frame[0]) + 1 <= 7 && case_deplacement(pion, 1, 0) && verif_case_echec(pion, 1, 0) && !frame_echec_roi.includes(frame)){
                 case_rose(pion, 1, 0)
             }
             if(Number(pion.frame[0]) + 1 <= 7 && Number(pion.frame[1]) - 1 >= 0 && verif_case_echec(pion, 1, -1)){
@@ -399,7 +403,7 @@ function Pion(pion){
                 attaque(pion, 1, 1)
             }
             if(! pion.move){
-                if(Number(pion.frame[0]) + 2 <= 7 && case_deplacement(pion, 2, 0) && case_deplacement(pion, 1, 0) && verif_case_echec(pion, 2, 0)){
+                if(Number(pion.frame[0]) + 2 <= 7 && case_deplacement(pion, 2, 0) && case_deplacement(pion, 1, 0) && verif_case_echec(pion, 2, 0) && !frame_echec_roi.includes(frame)){
                     case_rose(pion, 2, 0)
                 }
             }
@@ -447,6 +451,7 @@ function Roi(pion){
     }
 }
 function Tour(pion){
+    let frame = document.getElementById(pion.frame)
     if(pion_adverses.includes(pion)){
         croquer(pion)
         return
@@ -459,7 +464,7 @@ function Tour(pion){
     while(test_sur_plateau(pion, -i, 0) && test_case_accessible(pion, -i, 0)){
         if(verif_case_echec(pion, -i, 0)){
             if(attaque(pion, -i, 0)){break;}
-            case_rose(pion, -i, 0)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, -i, 0)}
         }
         i += 1
     }
@@ -468,7 +473,7 @@ function Tour(pion){
     while(test_sur_plateau(pion, i, 0) && test_case_accessible(pion, i, 0)){
         if(verif_case_echec(pion, i, 0)){
             if(attaque(pion, i, 0)){break;}
-            case_rose(pion, i, 0)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, i, 0)}
         }
         i += 1
         
@@ -478,7 +483,7 @@ function Tour(pion){
     while(test_sur_plateau(pion, 0, -i) && test_case_accessible(pion, 0, -i)){
         if(verif_case_echec(pion, 0, -i)){
             if(attaque(pion, 0, -i)){break;}
-            case_rose(pion, 0, -i)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, 0, -i)}
         }
         i += 1
     }
@@ -487,7 +492,7 @@ function Tour(pion){
     while(test_sur_plateau(pion, 0, i) && test_case_accessible(pion, 0, i)){
         if(verif_case_echec(pion, 0, i)){
             if(attaque(pion, 0, i)){break;}
-            case_rose(pion, 0, i)
+            if(!frame_echec_roi.includes(frame)){case_rose(pion, 0, i)}
         }
         i += 1
     }
@@ -688,9 +693,19 @@ function echec_et_mat(pion){
     let frame = pion.frame
     let positions = [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]
     for(let i = 0; i < positions.length; i++){
-        if(test_sur_plateau(pion, positions[i][0], positions[i][1]) && test_case_accessible(pion, positions[i][0], positions[i][1])){
-            pion.frame = String(Number(pion.frame[0]) + positions[i][0]) + String(Number(pion.frame[1]) + positions[i][1])
-            echec(pion)
+        let frame_temp = document.getElementById(String(Number(pion.frame[0]) + positions[i][0] + String(Number(pion.frame[1]) + positions[i][1])))
+        if(test_sur_plateau(pion, positions[i][0], positions[i][1])){
+            if(frame_temp.pion != null){
+                if(frame_temp.pion.id[0] == pion.id[0]){
+                    pion.frame = String(Number(pion.frame[0]) + positions[i][0]) + String(Number(pion.frame[1]) + positions[i][1])
+                    echec(pion)
+                }
+            }
+            else if(test_case_accessible(pion, positions[i][0], positions[i][1])){
+                pion.frame = String(Number(pion.frame[0]) + positions[i][0]) + String(Number(pion.frame[1]) + positions[i][1])
+                echec(pion)
+            }
+            
             pion.frame = frame
         }
     }
@@ -729,17 +744,16 @@ function echec(pion){
             }
         }
         if(verif_echec(pion, -i, -i, 'f') || verif_echec(pion, -i, -i, 'd')){break;}
-        // if(! case_deplacement(pion, -i, -i)){break;}
+        if(! case_deplacement(pion, -i, -i)){break;}
         i += 1
     }
     i = 1
     while(test_sur_plateau(pion, -i, i) && test_case_accessible(pion, -i, i)){
-        
         if(i == 1){
             if(verif_echec(pion, -i, i, 'p') || verif_echec(pion, -i, i, 'r')){break;}
         }
         if(verif_echec(pion, -i, i, 'f') || verif_echec(pion, -i, i, 'd')){break;}
-        // if(! case_deplacement(pion, -i, i)){break;}
+        if(! case_deplacement(pion, -i, i)){break;}
         i += 1
     }
     i = 1
@@ -748,17 +762,16 @@ function echec(pion){
             if(verif_echec(pion, i, -i, 'p') || verif_echec(pion, i, -i, 'r')){break;}
         }
         if(verif_echec(pion, i, -i, 'f') || verif_echec(pion, i, -i, 'd')){break;}
-        // if(! case_deplacement(pion, i, -i)){break;}
+        if(! case_deplacement(pion, i, -i)){break;}
         i += 1
     }
     i = 1
     while(test_sur_plateau(pion, i, i) && test_case_accessible(pion, i, i)){
-        
         if(i == 1){
             if(verif_echec(pion, i, i, 'p') || verif_echec(pion, i, i, 'r')){break;}
         }
         if(verif_echec(pion, i, i, 'f') || verif_echec(pion, i, i, 'd')){break;}
-        // if(! case_deplacement(pion, i, i)){break;}
+        if(! case_deplacement(pion, i, i)){break;}
         i += 1
     }
     i = 1
@@ -768,7 +781,7 @@ function echec(pion){
                 break;}
         }
         if(verif_echec(pion, -i, 0, 't') || verif_echec(pion, -i, 0, 'd')){break;}
-        // if(! case_deplacement(pion, -i, 0)){break;}
+        if(! case_deplacement(pion, -i, 0)){break;}
         i += 1
     }
 
@@ -781,7 +794,7 @@ function echec(pion){
         }
         if(verif_echec(pion, i, 0, 't') || verif_echec(pion, i, 0, 'd')){
             break;}
-        // if(! case_deplacement(pion, i, 0)){break;}
+        if(! case_deplacement(pion, i, 0)){break;}
         i += 1
     }
 
